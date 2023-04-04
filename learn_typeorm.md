@@ -1,6 +1,6 @@
-# Sequelize Learn
+# TypeORM Learn
 
-## Sequelize
+## TypeORM
 
 > One-to-One (Một-một)
 > BelongsTo: quan hệ một bảng thuộc về một bảng khác
