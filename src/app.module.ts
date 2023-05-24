@@ -1,14 +1,25 @@
 import { Module } from '@nestjs/common';
-// App Module sẽ tổng hợp Controller và Service
+import { TypeOrmModule } from '@nestjs/typeorm';
+/** */
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
-import { ConnectDBModule } from './connectdb/connectdb.module';
+import { ProductModule } from './modules/product/product.module';
 
 @Module({
-	imports: [ConfigModule.forRoot({ isGlobal: true }), UsersModule, ConnectDBModule],
-	controllers: [AppController],
-	providers: [AppService],
+  imports: [
+    ProductModule,
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: '103.200.23.120',
+      port: 3306,
+      username: 'anthomep_khiemtnps16018',
+      password: 'khiem1412fptz',
+      database: 'anthomep_gachashop',
+      entities: ['entity/*.js'],
+      synchronize: false,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
