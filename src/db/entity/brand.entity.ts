@@ -5,22 +5,24 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Product } from './product.entity';
 
-@Entity()
-export class Categories {
+@Entity({ name: 'brands' })
+export class Brand {
   @PrimaryGeneratedColumn({ type: 'int' })
-  id_categories: number;
+  id_brand: number;
 
   @Column({ type: 'varchar', length: 255 })
-  name_categories: string;
-
-  @Column({ type: 'int' })
-  parent_id: number;
+  name_brand: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Product, (product) => product.brands)
+  product: Product[];
 }

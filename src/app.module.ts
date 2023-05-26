@@ -1,25 +1,23 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { DataSource } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 /** */
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductModule } from './modules/product/product.module';
+import { dataSourceOptions } from './db/data-source';
+/* */
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     ProductModule,
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: '103.200.23.120',
-      port: 3306,
-      username: 'anthomep_khiemtnps16018',
-      password: 'khiem1412fptz',
-      database: 'anthomep_gachashop',
-      entities: ['entity/*.js'],
-      synchronize: false,
-    }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}

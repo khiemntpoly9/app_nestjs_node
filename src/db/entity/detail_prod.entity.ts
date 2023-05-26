@@ -5,9 +5,12 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Product } from './product.entity';
 
-@Entity()
+@Entity({ name: 'detail_product' })
 export class DeltailProd {
   @PrimaryGeneratedColumn({ type: 'int' })
   id_detail: number;
@@ -27,9 +30,20 @@ export class DeltailProd {
   @Column({ type: 'text' })
   preserve_prod: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
   updatedAt: Date;
+
+  @OneToOne(() => Product, (product) => product.detail_prod)
+  @JoinColumn({ name: 'id_product' })
+  product: Product;
 }

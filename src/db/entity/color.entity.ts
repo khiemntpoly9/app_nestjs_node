@@ -5,9 +5,11 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
 } from 'typeorm';
+import { Product } from './product.entity';
 
-@Entity()
+@Entity({ name: 'colors' })
 export class Color {
   @PrimaryGeneratedColumn({ type: 'int' })
   id_color: number;
@@ -23,4 +25,8 @@ export class Color {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // Màu với sản phẩm
+  @ManyToMany(() => Product, (product) => product.color)
+  product: Product[];
 }
