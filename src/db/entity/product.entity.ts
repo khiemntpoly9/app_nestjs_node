@@ -73,18 +73,14 @@ export class Product {
   brands: Brand;
 
   // Hình ảnh sản phẩm
-  @OneToMany(() => ImgProduct, (img_prod) => img_prod.product, {
-    cascade: true,
-  })
+  @OneToMany(() => ImgProduct, (img_prod) => img_prod.product)
   img_prod: ImgProduct[];
 
   // Thông tin sản phẩm
-  @OneToOne(() => DeltailProd, (detailProd) => detailProd.product, {
-    cascade: true,
-  })
+  @OneToOne(() => DeltailProd, (detailProd) => detailProd.product)
   detail_prod: DeltailProd;
 
-  @ManyToMany(() => Color, (color) => color.product)
+  @ManyToMany(() => Color, (color) => color.product, { cascade: true })
   @JoinTable({
     name: 'product_color',
     joinColumn: { name: 'product_id', referencedColumnName: 'id_product' },

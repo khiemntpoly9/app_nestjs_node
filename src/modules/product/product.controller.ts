@@ -11,6 +11,7 @@ import {
   Patch,
   Body,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { productService } from './product.service';
@@ -95,6 +96,19 @@ export class ProductController {
       return res
         .status(HttpStatus.OK)
         .json({ message: 'Cập nhật sản phẩm thành công!' });
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // Xoá sản phẩm
+  @Delete('product')
+  async deleteProduct(@Query('id') id: number, @Res() res: Response) {
+    try {
+      const deleteProd = await this.productService.deleteProduct(id);
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: 'Xoá sản phẩm thành công!' });
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

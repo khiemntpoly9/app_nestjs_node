@@ -162,7 +162,7 @@ export class productService {
   async updateImageProduct(
     id: number,
     productDto: productDto,
-  ): Promise<ImgProduct[]> {
+  ): Promise<ImgProduct> {
     try {
       // Xoá các ảnh cũ của sản phẩm
       await this.prodImgRepository.delete({
@@ -177,6 +177,49 @@ export class productService {
       return;
     } catch (error) {
       throw new Error(`Error! ${error}`);
+    }
+  }
+
+  /* Xoá sản phẩm */
+  async deleteProduct(id: number): Promise<void> {
+    try {
+      const product = await this.productRepository.findOneBy({
+        id_product: id,
+      });
+      // Kiểm tra xem có sản phẩm không
+      if (product) {
+        const productDetail = await this.productRepository
+          .createQueryBuilder('product')
+          .leftJoinAndSelect('product.detail_prod', 'detail_prod')
+          .where('product.id_product = :id', { id: product.id_product })
+          .getOne();
+        // Kiểm tra mối quan hệ trước khi xoá
+        if (productDetail && productDetail.detail_prod) {
+          const detailProd = productDetail.detail_prod;
+          // Xóa detailProd
+          await this.prodDetailRepository.remove(detailProd);
+        }
+        // Lấy hình ảnh
+        const productImg = await this.productRepository
+          .createQueryBuilder('product')
+          .leftJoinAndSelect('product.img_prod', 'img_prod')
+          .where('product.id_product = :id', { id: product.id_product })
+          .getMany();
+        //
+        if (productImg && productImg.length > 0) {
+          const imgProds = productImg.map((product) => product.img_prod); // Mảng các hình ảnh
+          for (const imgProd of imgProds) {
+            // Xoá từng hình ảnh
+            await this.prodImgRepository.remove(imgProd);
+          }
+        }
+      } else {
+        throw new Error('Sản phẩm không tồn tại!');
+      }
+      // Xoá product
+      await this.productRepository.remove(product);
+    } catch (error) {
+      throw new Error(error);
     }
   }
 }

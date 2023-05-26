@@ -17,6 +17,11 @@ export class DeltailProd {
 
   @Column({ type: 'int' })
   id_product: number;
+  @OneToOne(() => Product, (product) => product.detail_prod, {
+    cascade: ['remove'],
+  })
+  @JoinColumn({ name: 'id_product', referencedColumnName: 'id_product' })
+  product: Product;
 
   @Column({ type: 'text' })
   detail_prod: string;
@@ -42,8 +47,4 @@ export class DeltailProd {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   updatedAt: Date;
-
-  @OneToOne(() => Product, (product) => product.detail_prod)
-  @JoinColumn({ name: 'id_product' })
-  product: Product;
 }

@@ -14,8 +14,14 @@ export class ImgProduct {
   @PrimaryGeneratedColumn({ type: 'int' })
   id_images: number;
 
+  // N - 1 => Product
   @Column({ type: 'int' })
   id_product: number;
+  @ManyToOne(() => Product, (product) => product.img_prod, {
+    cascade: ['remove'],
+  })
+  @JoinColumn({ name: 'id_product', referencedColumnName: 'id_product' })
+  product: Product;
 
   @Column({ type: 'varchar', length: 255 })
   url: string;
@@ -25,8 +31,4 @@ export class ImgProduct {
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
   createdAt: Date;
-
-  @ManyToOne(() => Product, (product) => product.img_prod)
-  @JoinColumn({ name: 'id_product' })
-  product: Product;
 }
