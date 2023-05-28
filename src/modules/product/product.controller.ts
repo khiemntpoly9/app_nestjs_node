@@ -67,6 +67,7 @@ export class ProductController {
 	}
 
 	// Cập nhật sản phẩm
+	@Roles(Role.QTV, Role.CTV)
 	@UseGuards(AuthGuard)
 	@Patch('product')
 	async updateProduct(@Query('id') id: number, @Body() productDto: productDto, @Res() res: Response) {
