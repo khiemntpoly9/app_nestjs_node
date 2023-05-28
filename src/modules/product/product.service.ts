@@ -117,6 +117,53 @@ export class ProductService {
 		}
 	}
 
+	// Lấy sản phẩm chi tiết
+	async getProductId(id: number): Promise<any> {
+		try {
+			const result = await this.productRepository
+				.createQueryBuilder('products')
+				.leftJoinAndSelect('products.categories', 'categories')
+				.leftJoinAndSelect('products.brands', 'brands')
+				.leftJoinAndSelect('products.img_prod', 'img_prod')
+				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
+				.leftJoinAndSelect('products.color', 'color')
+				.select([
+					/* Product */
+					'products.id_product',
+					'products.name_prod',
+					'products.price_prod',
+					'products.img_thumbnail',
+					'products.createdAt',
+					'products.updatedAt',
+					/* Categories */
+					'categories.id_categories',
+					'categories.name_categories',
+					/* Brand */
+					'brands.id_brand',
+					'brands.name_brand',
+					/* Images  */
+					'img_prod.id_images',
+					'img_prod.url',
+					/* Detail Product */
+					'detail_prod.detail_prod',
+					'detail_prod.description_prod',
+					'detail_prod.specification_prod',
+					'detail_prod.preserve_prod',
+					/* Color */
+					'color.name_color',
+					'color.hex_color',
+				])
+				.where('products.id_product = :id', { id })
+				.getOne();
+			if (!result) {
+				throw new Error('Không tìm thấy sản phẩm!');
+			}
+			return result;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
 	/* Cập nhật sản phẩm */
 	async updateProduct(id: number, productDto: Partial<productDto>): Promise<Product> {
 		const product = await this.productRepository.findOneBy({ id_product: id });
@@ -159,7 +206,7 @@ export class ProductService {
 			await this.prodImgRepository.insert(images);
 			return;
 		} catch (error) {
-			throw new Error(`Error! ${error}`);
+			throw new Error(error);
 		}
 	}
 

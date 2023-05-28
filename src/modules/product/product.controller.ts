@@ -57,9 +57,10 @@ export class ProductController {
 
 	// Lấy chi tiết sản phẩm
 	@Get('product')
-	async getProduct() {
+	async getProduct(@Query('id') id: number, @Res() res: Response) {
 		try {
-			return 'Lấy sản phẩm chi tiết';
+			const data = await this.productService.getProductId(id);
+			return res.status(HttpStatus.OK).json(data);
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
