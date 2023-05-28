@@ -3,14 +3,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { jwtConstants } from './constants';
 import { Role } from './role.enum';
-// import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-	constructor(
-		private reflector: Reflector,
-		private jwtService: JwtService, // private userService: UserService,
-	) {}
+	constructor(private reflector: Reflector, private jwtService: JwtService) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const requiredRoles = this.reflector.getAllAndOverride<Role[]>('roles', [
