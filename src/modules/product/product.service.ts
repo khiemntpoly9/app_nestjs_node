@@ -10,7 +10,7 @@ import { ImgProduct } from 'src/db/entity/imageproduct.entity';
 import { productDto } from './dto/product.dto';
 
 @Injectable()
-export class productService {
+export class ProductService {
 	constructor(
 		@InjectRepository(Product)
 		private productRepository: Repository<Product>,
@@ -113,7 +113,7 @@ export class productService {
 				.getMany();
 			return result;
 		} catch (error) {
-			throw new Error(`Error! ${error}`);
+			throw new Error(error);
 		}
 	}
 

@@ -16,12 +16,13 @@ export class UserService {
 	// Check tài khoản có tồn tại
 	async checkUserEmail(email: string): Promise<User> {
 		try {
-			const findEmailUser = await this.userRepository.findOne({
-				where: {
-					email: email,
-				},
-			});
-			return findEmailUser;
+			const findEmailUser = this.userRepository
+				.createQueryBuilder('users')
+				.leftJoinAndSelect('users.role', 'role')
+				.select(['users.id_user', 'users.password', 'role.short_role'])
+				.where('users.email = :email', { email });
+			const result = await findEmailUser.getOne();
+			return result;
 		} catch (error) {
 			throw new Error(error);
 		}
@@ -31,6 +32,18 @@ export class UserService {
 	async saveUser(user: userDto): Promise<void> {
 		try {
 			await this.userRepository.save(user);
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy token tài khoản
+	async getTokenUser(id: number): Promise<any> {
+		try {
+			const getTokenUser = this.userRepository
+				.createQueryBuilder('users')
+				.select(['users.token'])
+				.where('users.id_user = :id', { id });
 		} catch (error) {
 			throw new Error(error);
 		}

@@ -12,16 +12,22 @@ import {
 	Body,
 	Query,
 	Delete,
+	UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { productService } from './product.service';
+import { ProductService } from './product.service';
 import { productDto } from './dto/product.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from '../auth/role.enum';
 
 @Controller('api')
 export class ProductController {
-	constructor(private readonly productService: productService) {}
+	constructor(private readonly productService: ProductService) {}
 
 	// Thêm sản phẩm
+	@Roles(Role.QTV, Role.CTV)
+	@UseGuards(AuthGuard)
 	@Post('product')
 	async createProduct(@Body() productDto: productDto, @Res() res: Response) {
 		try {
@@ -60,6 +66,7 @@ export class ProductController {
 	}
 
 	// Cập nhật sản phẩm
+	@UseGuards(AuthGuard)
 	@Patch('product')
 	async updateProduct(@Query('id') id: number, @Body() productDto: productDto, @Res() res: Response) {
 		try {
@@ -76,6 +83,8 @@ export class ProductController {
 	}
 
 	// Xoá sản phẩm
+	@Roles(Role.QTV, Role.CTV)
+	@UseGuards(AuthGuard)
 	@Delete('product')
 	async deleteProduct(@Query('id') id: number, @Res() res: Response) {
 		try {
