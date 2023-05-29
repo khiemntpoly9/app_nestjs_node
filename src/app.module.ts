@@ -12,6 +12,7 @@ import { dataSourceOptions } from './db/data-source';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthGuard } from './modules/auth/auth.guard';
+import { CategoriesModule } from './modules/categories/categories.module';
 /* */
 
 @Module({
@@ -21,6 +22,7 @@ import { AuthGuard } from './modules/auth/auth.guard';
 		ProductModule,
 		UserModule,
 		AuthModule,
+		CategoriesModule,
 	],
 	controllers: [AppController],
 	providers: [
