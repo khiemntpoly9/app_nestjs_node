@@ -76,7 +76,7 @@ export class ProductService {
 			}
 			return imgProducts;
 		} catch (error) {
-			throw new Error(`Error! ${error}`);
+			throw new Error(error);
 		}
 	}
 
@@ -142,6 +142,7 @@ export class ProductService {
 					'products.name_prod',
 					'products.price_prod',
 					'products.img_thumbnail',
+					'products.public_id',
 					'products.createdAt',
 					'products.updatedAt',
 					/* Categories */
@@ -152,6 +153,7 @@ export class ProductService {
 					'brands.name_brand',
 					/* Images  */
 					'img_prod.id_images',
+					'img_prod.public_id',
 					'img_prod.url',
 					/* Detail Product */
 					'detail_prod.detail_prod',
@@ -201,25 +203,36 @@ export class ProductService {
 	}
 
 	// Cập nhật hình ảnh sản phẩm
-	/*
-	async updateImageProduct(id: number, productDto: productDto): Promise<ImgProduct> {
+	async updateImageProduct(id: number, public_id: string, secure_url: string): Promise<ImgProduct> {
 		try {
-			// Xoá các ảnh cũ của sản phẩm
-			await this.prodImgRepository.delete({
-				id_product: id,
-			});
-			// Thêm hình ảnh mới của sản phẩm
-			const images = productDto.list_img.map((imgUrl) => ({
-				id_product: id,
-				url: imgUrl,
-			}));
-			await this.prodImgRepository.insert(images);
+			const img_thumbnail = this.productRepository
+				.createQueryBuilder('products')
+				.update(Product)
+				.set({
+					img_thumbnail: secure_url,
+					public_id: public_id,
+				})
+				.where('id_product = :id', { id: id })
+				.execute();
 			return;
 		} catch (error) {
 			throw new Error(error);
 		}
 	}
-	*/
+
+	/* Xoá hình ảnh sản phẩm */
+	async delImgProd(idp: string): Promise<void> {
+		try {
+			// Xoá ảnh trên cloud
+			await this.cloudinaryService.deleteFile(idp);
+			// Xoá database
+			const img_prod = await this.prodImgRepository.delete({
+				public_id: idp,
+			});
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
 
 	/* Xoá sản phẩm */
 	async deleteProduct(id: number): Promise<void> {

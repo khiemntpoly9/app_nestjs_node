@@ -82,27 +82,6 @@ export class ProductController {
 		}
 	}
 
-	// Thêm sản phẩm
-	/*
-	@Roles(Role.QTV, Role.CTV)
-	@UseGuards(AuthGuard)
-	@Post('product')
-	async createProduct(@Body() productDto: productDto, @Res() res: Response) {
-		try {
-			// Tạo sản phẩm
-			const createProduct = await this.productService.createProduct(productDto);
-			const newProductId = createProduct.id_product;
-			//  Tạo thông tin sản phẩm
-			const createProductDetail = await this.productService.createProductDetail(newProductId, productDto);
-			// Thêm hình ảnh sản phẩm
-			const addImgProduct = await this.productService.addImgProduct(newProductId, productDto);
-			return res.status(HttpStatus.OK).json({ message: 'Tạo sản phẩm thành công!' });
-		} catch (error) {
-			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-	*/
-
 	// Lấy tất cả sản phẩm
 	@Get('products')
 	async getAllProduct(@Res() res: Response) {
@@ -129,14 +108,61 @@ export class ProductController {
 	@Roles(Role.QTV, Role.CTV)
 	@UseGuards(AuthGuard)
 	@Patch('product')
-	async updateProduct(@Query('id') id: number, @Body() productDto: productDto, @Res() res: Response) {
+	@UseInterceptors(
+		FileFieldsInterceptor([{ name: 'img_thumbnail', maxCount: 1 }, { name: 'list_img' }], MulterOptions),
+	)
+	async updateProduct(
+		// Nhận file
+		@UploadedFiles()
+		files: { img_thumbnail: Express.Multer.File; list_img: Express.Multer.File[] },
+		@Query('id') id: number,
+		@Body() productDto: productDto,
+		@Res() res: Response,
+	) {
 		try {
+			// Check xem có sản phẩm không
+			const prodDetail = await this.productService.getProductId(id);
+			// Check xem có img_thubnail, nếu có thì xoá ảnh cũ và upload ảnh mới
+			if (files.img_thumbnail) {
+				// Xoá ảnh trên cloud
+				await this.cloudinaryService.deleteFile(prodDetail.public_id);
+				// Lấy ảnh mới, thêm vào db
+				const images_thumbnail = files.img_thumbnail[0];
+				const up_thumbnail = await this.cloudinaryService.uploadFile(images_thumbnail);
+				const img_thumbnail_index = {
+					public_id: up_thumbnail.public_id,
+					secure_url: up_thumbnail.secure_url,
+				};
+				// Update thumbnail db
+				await this.productService.updateImageProduct(
+					id,
+					img_thumbnail_index.public_id,
+					img_thumbnail_index.secure_url,
+				);
+			}
+			// Check xem có list_img, nếu có thì add thêm
+			if (files.list_img) {
+				// upload hình lên cloud
+				const uploadPromises = files.list_img.map(async (file) => {
+					const upload = await this.cloudinaryService.uploadFile(file);
+					return upload;
+				});
+				// result
+				const uploads = await Promise.all(uploadPromises);
+				// Xử lý kết quả trả về
+				const list_img = uploads.map((item) => {
+					return {
+						public_id: item.public_id,
+						secure_url: item.secure_url,
+					};
+				});
+				// thêm hình ảnh vào db
+				const addImgProduct = await this.productService.addImgProduct(id, list_img);
+			}
 			// Chỉnh sửa sản phẩm
 			const updateProduct = await this.productService.updateProduct(id, productDto);
 			// Chỉnh sửa sản phẩm chi tiết
 			const updateProductDetail = await this.productService.updateProductDetai(id, productDto);
-			// Chỉnh sửa hình ảnh
-			// const updateImageProduct = await this.productService.updateImageProduct(id, productDto);
 			return res.status(HttpStatus.OK).json({ message: 'Cập nhật sản phẩm thành công!' });
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -150,7 +176,19 @@ export class ProductController {
 	async deleteProduct(@Query('id') id: number, @Res() res: Response) {
 		try {
 			const deleteProd = await this.productService.deleteProduct(id);
-			return res.status(HttpStatus.OK).json({ message: 'Xoá sản phẩm thành công!' });
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Xoá hình ảnh của sản phẩm
+	@Roles(Role.QTV, Role.CTV)
+	@UseGuards(AuthGuard)
+	@Delete('product/image')
+	async deleteImgProdut(@Query('idp') idp: string, @Res() res: Response) {
+		try {
+			await this.productService.delImgProd(idp);
+			return res.status(HttpStatus.OK).json({ message: 'Xoá ảnh thành công!' });
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
