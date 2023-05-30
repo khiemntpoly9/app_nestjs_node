@@ -203,9 +203,9 @@ export class ProductService {
 	}
 
 	// Cập nhật hình ảnh sản phẩm
-	async updateImageProduct(id: number, public_id: string, secure_url: string): Promise<ImgProduct> {
+	async updateImageProduct(id: number, public_id: string, secure_url: string): Promise<void> {
 		try {
-			const img_thumbnail = this.productRepository
+			const img_thumbnail = await this.productRepository
 				.createQueryBuilder('products')
 				.update(Product)
 				.set({
@@ -214,7 +214,6 @@ export class ProductService {
 				})
 				.where('id_product = :id', { id: id })
 				.execute();
-			return;
 		} catch (error) {
 			throw new Error(error);
 		}
