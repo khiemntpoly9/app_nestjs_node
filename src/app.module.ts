@@ -13,6 +13,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthGuard } from './modules/auth/auth.guard';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 /* */
 
 @Module({
@@ -23,6 +24,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 		UserModule,
 		AuthModule,
 		CategoriesModule,
+		CloudinaryModule,
 	],
 	controllers: [AppController],
 	providers: [

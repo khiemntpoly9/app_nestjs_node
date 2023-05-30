@@ -44,6 +44,9 @@ export class Product {
 	@Column({ type: 'varchar', length: 255 })
 	img_thumbnail: string;
 
+	@Column({ type: 'varchar', length: 255 })
+	public_id: string;
+
 	@Column({ type: 'int' })
 	discount: number;
 

@@ -6,10 +6,11 @@ import { ProductService } from './product.service';
 import { Product } from 'src/db/entity/product.entity';
 import { DeltailProd } from 'src/db/entity/detail_prod.entity';
 import { ImgProduct } from 'src/db/entity/imageproduct.entity';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([Product, DeltailProd, ImgProduct])],
 	controllers: [ProductController],
-	providers: [ProductService],
+	providers: [ProductService, CloudinaryService],
 })
 export class ProductModule {}

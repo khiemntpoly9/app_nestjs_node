@@ -8,6 +8,7 @@ import { DeltailProd } from 'src/db/entity/detail_prod.entity';
 import { ImgProduct } from 'src/db/entity/imageproduct.entity';
 // DTO
 import { productDto } from './dto/product.dto';
+import { imagesDto } from './dto/images.dto';
 
 @Injectable()
 export class ProductService {
@@ -21,7 +22,7 @@ export class ProductService {
 	) {}
 
 	/* Tạo sản phẩm mới */
-	async createProduct(productDto: productDto): Promise<Product> {
+	async createProduct(productDto: productDto, up_thumbnail: imagesDto): Promise<Product> {
 		try {
 			const product = new Product();
 			product.name_prod = productDto.name_prod;
@@ -30,12 +31,13 @@ export class ProductService {
 			product.price_prod = productDto.price_prod;
 			product.material_prod = productDto.material_prod;
 			product.style_prod = productDto.style_prod;
-			product.img_thumbnail = productDto.img_thumbnail;
+			product.img_thumbnail = up_thumbnail.secure_url;
+			product.public_id = up_thumbnail.public_id;
 			//
 			const saveProduct = await this.productRepository.save(product);
 			return saveProduct;
 		} catch (error) {
-			throw new Error(`Error! ${error}`);
+			throw new Error(error);
 		}
 	}
 
@@ -52,18 +54,20 @@ export class ProductService {
 			const saveProductDetail = await this.prodDetailRepository.save(detailProd);
 			return saveProductDetail;
 		} catch (error) {
-			throw new Error(`Error! ${error}`);
+			throw new Error(error);
 		}
 	}
 
 	// Thêm ảnh sản phẩm
-	async addImgProduct(id_prod: number, productDto: productDto): Promise<ImgProduct[]> {
+	async addImgProduct(id_prod: number, list_img: imagesDto[]): Promise<ImgProduct[]> {
 		try {
 			const imgProducts: ImgProduct[] = [];
-			for (const imgUrl of productDto.list_img) {
+
+			for (const imgItem of list_img) {
 				const imgProd = new ImgProduct();
 				imgProd.id_product = id_prod;
-				imgProd.url = imgUrl;
+				imgProd.public_id = imgItem.public_id;
+				imgProd.url = imgItem.secure_url;
 				const saveImgProd = await this.prodImgRepository.save(imgProd);
 				imgProducts.push(saveImgProd);
 			}
@@ -89,6 +93,7 @@ export class ProductService {
 					'products.name_prod',
 					'products.price_prod',
 					'products.img_thumbnail',
+					'products.public_id',
 					'products.createdAt',
 					'products.updatedAt',
 					/* Categories */
@@ -100,6 +105,7 @@ export class ProductService {
 					/* Images  */
 					'img_prod.id_images',
 					'img_prod.url',
+					'img_prod.public_id',
 					/* Detail Product */
 					'detail_prod.detail_prod',
 					'detail_prod.description_prod',
@@ -192,6 +198,7 @@ export class ProductService {
 	}
 
 	// Cập nhật hình ảnh sản phẩm
+	/*
 	async updateImageProduct(id: number, productDto: productDto): Promise<ImgProduct> {
 		try {
 			// Xoá các ảnh cũ của sản phẩm
@@ -209,6 +216,7 @@ export class ProductService {
 			throw new Error(error);
 		}
 	}
+	*/
 
 	/* Xoá sản phẩm */
 	async deleteProduct(id: number): Promise<void> {
