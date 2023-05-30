@@ -13,7 +13,7 @@ import { AuthGuard } from './auth.guard';
 @Module({
 	imports: [
 		TypeOrmModule.forFeature([User]),
-		JwtModule.register({ global: true, secret: jwtConstants.secret, signOptions: { expiresIn: '60m' } }),
+		JwtModule.register({ global: true, secret: jwtConstants.secret, signOptions: { expiresIn: '6h' } }),
 		UserModule,
 	],
 	controllers: [AuthController],
