@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +10,7 @@ import { ImgProduct } from 'src/db/entity/imageproduct.entity';
 // DTO
 import { productDto } from './dto/product.dto';
 import { imagesDto } from './dto/images.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class ProductService {
@@ -19,6 +21,7 @@ export class ProductService {
 		private prodDetailRepository: Repository<DeltailProd>,
 		@InjectRepository(ImgProduct)
 		private prodImgRepository: Repository<ImgProduct>,
+		private cloudinaryService: CloudinaryService,
 	) {}
 
 	/* Tạo sản phẩm mới */
@@ -226,6 +229,9 @@ export class ProductService {
 			});
 			// Kiểm tra xem có sản phẩm không
 			if (product) {
+				// Xoá ảnh thumbnail trên cloud
+				const delThumbnail = await this.cloudinaryService.deleteFile(product.public_id);
+				// Lấy data detail
 				const productDetail = await this.productRepository
 					.createQueryBuilder('product')
 					.leftJoinAndSelect('product.detail_prod', 'detail_prod')
@@ -246,6 +252,13 @@ export class ProductService {
 				//
 				if (productImg && productImg.length > 0) {
 					const imgProds = productImg.map((product) => product.img_prod); // Mảng các hình ảnh
+					// Lấy public_id
+					const publicIds = imgProds.map((imgArray) => imgArray.map((img) => img.public_id));
+					// Tiến hành xoá
+					const deleteImageCloud = publicIds.flat().map(async (item) => {
+						const del = await this.cloudinaryService.deleteFile(item);
+					});
+					// Xoá trong database
 					for (const imgProd of imgProds) {
 						// Xoá từng hình ảnh
 						await this.prodImgRepository.remove(imgProd);

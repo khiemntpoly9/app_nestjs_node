@@ -10,6 +10,7 @@ export class ImgProduct {
 	// N - 1 => Product
 	@Column({ type: 'int' })
 	id_product: number;
+
 	@ManyToOne(() => Product, (product) => product.img_prod, {
 		cascade: ['remove'],
 	})
