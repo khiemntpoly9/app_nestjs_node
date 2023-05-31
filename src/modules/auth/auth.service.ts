@@ -31,7 +31,7 @@ export class AuthService {
 			user.email = authDto.email;
 			user.password = hashedPassword;
 			// Save User
-			await this.userService.saveUser(user);
+			this.userService.saveUser(user);
 		} catch (error) {
 			throw new Error(error);
 		}
@@ -49,19 +49,21 @@ export class AuthService {
 			if (!passwordMatches) {
 				throw new Error('Sai mật khẩu!');
 			}
-			const payload = { userId: user.id_user, role: user.role.short_role };
-			return {
-				access_token: await this.jwtService.signAsync(payload),
-			};
+			const payload = { userId: user.id_user, email: user.email, role: user.role.short_role };
+			const access_token = await this.jwtService.signAsync(payload);
+			// Lưu token vào db user
+			const saveToken = this.userService.saveTokenUser(auth.email, access_token);
+			return access_token;
 		} catch (error) {
 			throw new Error(error);
 		}
 	}
 
 	// Đăng xuất
-	async logoutAuth(): Promise<void> {
+	async logoutAuth(email: string) {
 		try {
-			console.log('Đăng xuất');
+			// refesh token user
+			const refeshToken = this.userService.saveTokenUser(email, null);
 		} catch (error) {
 			throw new Error(error);
 		}

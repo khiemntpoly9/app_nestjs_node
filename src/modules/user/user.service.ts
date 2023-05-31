@@ -19,19 +19,19 @@ export class UserService {
 			const findEmailUser = this.userRepository
 				.createQueryBuilder('users')
 				.leftJoinAndSelect('users.role', 'role')
-				.select(['users.id_user', 'users.password', 'role.short_role'])
-				.where('users.email = :email', { email });
-			const result = await findEmailUser.getOne();
-			return result;
+				.select(['users.id_user', 'users.email', 'users.password', 'role.short_role'])
+				.where('users.email = :email', { email })
+				.getOne();
+			return findEmailUser;
 		} catch (error) {
 			throw new Error(error);
 		}
 	}
 
 	// Lưu tài khoản
-	async saveUser(user: userDto): Promise<void> {
+	saveUser(user: userDto) {
 		try {
-			await this.userRepository.save(user);
+			this.userRepository.save(user);
 		} catch (error) {
 			throw new Error(error);
 		}
@@ -40,10 +40,26 @@ export class UserService {
 	// Lấy token tài khoản
 	async getTokenUser(id: number): Promise<any> {
 		try {
-			const getTokenUser = this.userRepository
+			const getTokenUser = await this.userRepository
 				.createQueryBuilder('users')
 				.select(['users.token'])
-				.where('users.id_user = :id', { id });
+				.where('users.id_user = :id', { id })
+				.getOne();
+			return getTokenUser;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lưu & refesh token tài khoản
+	saveTokenUser(email: string, token: string | null) {
+		try {
+			const saveToken = this.userRepository
+				.createQueryBuilder('users')
+				.update(User)
+				.set({ token: token })
+				.where('email = :email', { email })
+				.execute();
 		} catch (error) {
 			throw new Error(error);
 		}

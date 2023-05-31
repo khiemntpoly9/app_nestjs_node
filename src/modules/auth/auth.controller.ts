@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, Res, HttpException, HttpStatus, Post } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Res, HttpException, HttpStatus, Post, Req } from '@nestjs/common';
+import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { authDto } from './dto/auth.dto';
+import { JwtService } from '@nestjs/jwt';
+import { jwtConstants } from './constants';
 
 @Controller('api')
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	constructor(private readonly authService: AuthService, private jwtService: JwtService) {}
 
 	// Đăng ký
 	@Post('register')
@@ -35,10 +37,17 @@ export class AuthController {
 
 	// Đăng xuất
 	@Post('logout')
-	async logoutAuth(@Res() res: Response) {
+	async logoutAuth(@Res() res: Response, @Req() req: Request) {
 		try {
-			const logout = await this.authService.logoutAuth();
-			return res.status(HttpStatus.OK).json({ message: 'Đăng xuất thành công!' });
+			const token = req.cookies['access_token'];
+			const payload = await this.jwtService.verifyAsync(token, {
+				secret: jwtConstants.secret,
+			});
+			const logout = await this.authService.logoutAuth(payload.email);
+			return res
+				.status(HttpStatus.OK)
+				.clearCookie('access_token', { sameSite: 'none', secure: true })
+				.json({ message: 'Đăng xuất thành công!' });
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

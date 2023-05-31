@@ -33,7 +33,7 @@ export class User {
 	@Column({ type: 'int', default: 3 })
 	id_role: number;
 
-	@Column({ type: 'varchar', length: 255, default: null })
+	@Column({ type: 'varchar', length: 255, default: null, nullable: true })
 	token: string;
 
 	@CreateDateColumn()

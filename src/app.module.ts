@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,6 +14,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AuthGuard } from './modules/auth/auth.guard';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
+import { LoggerMiddleware } from './middleware/logger.middleware';
 /* */
 
 @Module({
@@ -35,6 +36,15 @@ import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 		},
 	],
 })
-export class AppModule {
+export class AppModule implements NestModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer
+			.apply(LoggerMiddleware)
+			.exclude(
+				{ path: 'api/login', method: RequestMethod.POST },
+				{ path: 'api/logout', method: RequestMethod.POST },
+			)
+			.forRoutes({ path: '*', method: RequestMethod.ALL });
+	}
 	constructor(private dataSource: DataSource) {}
 }
