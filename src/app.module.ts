@@ -15,6 +15,7 @@ import { AuthGuard } from './modules/auth/auth.guard';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
+import { MailModule } from './modules/mail/mail.module';
 /* */
 
 @Module({
@@ -26,6 +27,7 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
 		AuthModule,
 		CategoriesModule,
 		CloudinaryModule,
+		MailModule,
 	],
 	controllers: [AppController],
 	providers: [

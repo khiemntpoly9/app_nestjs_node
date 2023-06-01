@@ -4,7 +4,7 @@ import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
 import { AuthGuard } from '../auth/auth.guard';
 
-@Controller('api')
+@Controller()
 export class UserController {
 	constructor(private userService: UserService) {}
 

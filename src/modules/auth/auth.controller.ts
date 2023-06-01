@@ -6,7 +6,7 @@ import { authDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 
-@Controller('api')
+@Controller()
 export class AuthController {
 	constructor(private readonly authService: AuthService, private jwtService: JwtService) {}
 

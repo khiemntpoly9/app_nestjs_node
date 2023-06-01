@@ -19,7 +19,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
 
-@Controller('api')
+@Controller()
 export class CategoriesController {
 	constructor(private categoriesService: CategoriesService) {}
 

@@ -18,6 +18,8 @@ async function bootstrap() {
 	});
 	// Cookie Parser
 	app.use(cookieParser());
+	//
+	app.setGlobalPrefix('api');
 	/* */
 	const config = new DocumentBuilder()
 		.setTitle('GachaShop API')

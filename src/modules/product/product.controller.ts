@@ -26,7 +26,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { MulterOptions } from './multerOption';
 
-@Controller('api')
+@Controller()
 export class ProductController {
 	constructor(
 		private readonly productService: ProductService,
