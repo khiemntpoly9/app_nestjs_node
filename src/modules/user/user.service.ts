@@ -19,7 +19,14 @@ export class UserService {
 			const findEmailUser = await this.userRepository
 				.createQueryBuilder('users')
 				.leftJoinAndSelect('users.role', 'role')
-				.select(['users.id_user', 'users.email', 'users.password', 'users.verify', 'role.short_role'])
+				.select([
+					'users.id_user',
+					'users.last_name',
+					'users.email',
+					'users.password',
+					'users.verify',
+					'role.short_role',
+				])
 				.where('users.email = :email', { email })
 				.getOne();
 			return findEmailUser;
@@ -72,6 +79,21 @@ export class UserService {
 				.createQueryBuilder('users')
 				.update(User)
 				.set({ verify: 1 })
+				.where('email = :email', { email })
+				.execute();
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lưu mật khẩu mới
+	savePassUser(email: string, password: string, token: string | null) {
+		try {
+			const savePass = this.userRepository
+				.createQueryBuilder('users')
+				.update(User)
+				.set({ password: password })
+				.set({ token: token })
 				.where('email = :email', { email })
 				.execute();
 		} catch (error) {
