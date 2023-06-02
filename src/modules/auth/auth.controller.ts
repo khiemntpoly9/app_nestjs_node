@@ -1,16 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, Res, HttpException, HttpStatus, Post, Req, Get, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Res,
+	HttpException,
+	HttpStatus,
+	Post,
+	Req,
+	Get,
+	UseGuards,
+	Query,
+} from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { authDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
+import { jwtConstants, jwtVerify } from './constants';
 import { GoogleStrategy } from './guards/google.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import * as moment from 'moment-timezone';
+import { UserService } from '../user/user.service';
 
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly authService: AuthService, private jwtService: JwtService) {}
+	constructor(
+		private readonly authService: AuthService,
+		private userService: UserService,
+		private jwtService: JwtService,
+	) {}
 
 	// Đăng ký
 	@Post('register')
@@ -23,7 +40,7 @@ export class AuthController {
 		}
 	}
 
-	//Đăng nhập Passport
+	// Đăng nhập Passport
 	@UseGuards(LocalAuthGuard)
 	@Post('login')
 	async login(@Req() req: Request, @Res() res: Response) {
@@ -83,5 +100,25 @@ export class AuthController {
 	@UseGuards(GoogleStrategy)
 	handleRedirect() {
 		return { message: 'Google OK' };
+	}
+
+	/* Verify Account */
+	@Get('verify-account')
+	async verifyAccout(@Query('token') token: string, @Res() res: Response) {
+		const payload = await this.jwtService.verifyAsync(token, {
+			secret: jwtVerify.secret,
+		});
+		// Xử lý thời gian
+		const expirationDate = new Date(payload.exp * 1000);
+		const expirationTimeGMT7 = moment(expirationDate).tz('Asia/Ho_Chi_Minh').format();
+		const currentTime = moment();
+		const targetTime = moment(expirationTimeGMT7);
+		// Check time
+		if (!currentTime.isBefore(targetTime)) {
+			throw new Error('Token đã hết hạn!');
+		}
+		// Update Verify Accout
+		this.userService.verifyUser(payload.email);
+		return res.status(HttpStatus.OK).json({ message: 'Xác thực tài khoản thành công!' });
 	}
 }

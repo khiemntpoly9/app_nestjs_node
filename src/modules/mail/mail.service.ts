@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+import * as dotenv from 'dotenv';
+dotenv.config();
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
@@ -13,6 +15,24 @@ export class MailService {
 				template: 'welcome',
 				context: {
 					username: 'Trung Khiêm',
+				},
+			})
+			.then(() => {})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
+
+	// Send mail verify
+	sendMailVerify(email: string, last_name: string, verify_token: string): void {
+		this.mailerService
+			.sendMail({
+				to: email,
+				subject: 'Xác thực tài khoản GachaShop',
+				template: 'verify',
+				context: {
+					last_name: last_name,
+					link_verify: process.env.BASE_URL + `/api/auth/verify-account?token=${verify_token}`,
 				},
 			})
 			.then(() => {})

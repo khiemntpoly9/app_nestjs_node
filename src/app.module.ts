@@ -3,7 +3,7 @@ import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/c
 import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
-/** */
+/* */
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductModule } from './modules/product/product.module';
@@ -37,8 +37,8 @@ export class AppModule implements NestModule {
 		consumer
 			.apply(LoggerMiddleware)
 			.exclude(
-				{ path: 'api/auth/login', method: RequestMethod.POST },
-				{ path: 'api/auth/logout', method: RequestMethod.POST },
+				{ path: 'auth/login', method: RequestMethod.POST },
+				{ path: 'auth/logout', method: RequestMethod.POST },
 			)
 			.forRoutes({ path: '*', method: RequestMethod.ALL });
 	}

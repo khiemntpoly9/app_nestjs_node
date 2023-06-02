@@ -30,6 +30,9 @@ export class User {
 	@Column({ type: 'varchar', length: 255 })
 	password: string;
 
+	@Column({ type: 'tinyint', default: 0 })
+	verify: number;
+
 	@Column({ type: 'int', default: 3 })
 	id_role: number;
 

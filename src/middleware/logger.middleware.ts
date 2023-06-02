@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BadRequestException, Injectable, NestMiddleware } from '@nestjs/common';
+import { BadRequestException, Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response, NextFunction } from 'express';
 import { jwtConstants } from 'src/modules/auth/constants';
@@ -14,8 +14,11 @@ export class LoggerMiddleware implements NestMiddleware {
 			const payload = await this.jwtService.verifyAsync(token, {
 				secret: jwtConstants.secret,
 			});
+			// Check Verify
+			if (payload.verify == false) throw new UnauthorizedException('Bạn cần xác minh tài khoản!');
 			// payload.userId
 			const tokenUser = await this.userService.getTokenUser(payload.userId);
+			if (tokenUser == null) throw new UnauthorizedException('Bạn cần đăng nhập!');
 			// tokenUser.token
 			if (token !== tokenUser.token) {
 				const updateToken = { ...tokenUser.token, expiresIn: '6h' };

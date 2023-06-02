@@ -5,12 +5,17 @@ import { User } from 'src/db/entity/user.entity';
 import { authDto, authDtoGG } from './dto/auth.dto';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { jwtVerify } from './constants';
+import { MailService } from '../mail/mail.service';
 
 const saltOrRounds = 10;
-
 @Injectable()
 export class AuthService {
-	constructor(private userService: UserService, private readonly jwtService: JwtService) {}
+	constructor(
+		private userService: UserService,
+		private readonly jwtService: JwtService,
+		private mailService: MailService,
+	) {}
 
 	// Đăng ký
 	async registerAuth(authDto: authDto): Promise<void> {
@@ -22,7 +27,6 @@ export class AuthService {
 			// Mã hoá mật khẩu
 			const salt = await bcrypt.genSalt(saltOrRounds);
 			const hashedPassword = await bcrypt.hash(authDto.password, salt);
-
 			// User
 			const user = new User();
 			user.first_name = authDto.first_name;
@@ -30,8 +34,26 @@ export class AuthService {
 			user.phone = authDto.phone;
 			user.email = authDto.email;
 			user.password = hashedPassword;
+			user.verify = 0;
 			// Save User
-			this.userService.saveUser(user);
+			const newUser = await this.userService.saveUser(user);
+			/*
+			newUser.id_user
+			newUser.email
+			timeExpires
+			*/
+			const newUserToken = {
+				userId: newUser.id_user,
+				email: newUser.email,
+			};
+			// Verify token
+			const verify_token = await this.jwtService.signAsync(newUserToken, {
+				secret: jwtVerify.secret,
+				expiresIn: '24h',
+			});
+			// Gửi Email
+			this.mailService.sendMailVerify(newUser.email, newUser.last_name, verify_token);
+			// End
 		} catch (error) {
 			throw new Error(error);
 		}
@@ -62,7 +84,12 @@ export class AuthService {
 	*/
 	// Đăng nhập Passport
 	async login(user: any) {
-		const payload = { userId: user.id_user, email: user.email, role: user.role.short_role };
+		const payload = {
+			userId: user.id_user,
+			email: user.email,
+			role: user.role.short_role,
+			verify: user.verify,
+		};
 		const access_token = await this.jwtService.signAsync(payload);
 		// Lưu token vào db user
 		const saveToken = this.userService.saveTokenUser(user.email, access_token);

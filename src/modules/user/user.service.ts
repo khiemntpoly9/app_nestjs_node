@@ -19,7 +19,7 @@ export class UserService {
 			const findEmailUser = await this.userRepository
 				.createQueryBuilder('users')
 				.leftJoinAndSelect('users.role', 'role')
-				.select(['users.id_user', 'users.email', 'users.password', 'role.short_role'])
+				.select(['users.id_user', 'users.email', 'users.password', 'users.verify', 'role.short_role'])
 				.where('users.email = :email', { email })
 				.getOne();
 			return findEmailUser;
@@ -31,7 +31,7 @@ export class UserService {
 	// Lưu tài khoản
 	saveUser(user: userDto) {
 		try {
-			this.userRepository.save(user);
+			return this.userRepository.save(user);
 		} catch (error) {
 			throw new Error(error);
 		}
@@ -58,6 +58,20 @@ export class UserService {
 				.createQueryBuilder('users')
 				.update(User)
 				.set({ token: token })
+				.where('email = :email', { email })
+				.execute();
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Verify Accout
+	verifyUser(email: string) {
+		try {
+			const verify = this.userRepository
+				.createQueryBuilder('users')
+				.update(User)
+				.set({ verify: 1 })
 				.where('email = :email', { email })
 				.execute();
 		} catch (error) {

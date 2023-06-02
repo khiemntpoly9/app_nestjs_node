@@ -13,6 +13,7 @@ import { GoogleStrategy } from './utils/google.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './utils/local.strategy';
 import { JwtStrategy } from './utils/jwt.strategy';
+import { MailService } from '../mail/mail.service';
 
 @Module({
 	imports: [
@@ -22,7 +23,7 @@ import { JwtStrategy } from './utils/jwt.strategy';
 		PassportModule,
 	],
 	controllers: [AuthController],
-	providers: [AuthService, UserService, AuthGuard, LocalStrategy, JwtStrategy, GoogleStrategy],
+	providers: [AuthService, UserService, AuthGuard, LocalStrategy, JwtStrategy, GoogleStrategy, MailService],
 	exports: [AuthService],
 })
 export class AuthModule {}

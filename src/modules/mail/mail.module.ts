@@ -35,6 +35,6 @@ import { join } from 'path';
 	],
 	controllers: [MailController],
 	providers: [MailService],
-	exports: [],
+	exports: [MailService],
 })
 export class MailModule {}
