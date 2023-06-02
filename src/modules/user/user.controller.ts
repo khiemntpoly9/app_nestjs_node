@@ -1,19 +1,21 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req } from '@nestjs/common';
+import { Request } from 'express';
 import { UserService } from './user.service';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
-import { AuthGuard } from '../auth/auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller()
 export class UserController {
 	constructor(private userService: UserService) {}
 
-	@Roles(Role.QTV, Role.CTV)
-	@UseGuards(AuthGuard)
+	@Roles(Role.CTV, Role.QTV)
+	@UseGuards(JwtAuthGuard)
 	@Get('admin')
-	async testAdmin() {
+	async testAdmin(@Req() req: Request) {
 		try {
-			return 'Quyền Admin';
+			console.log(req.user);
+			return req.user;
 		} catch (error) {
 			throw new Error(error);
 		}

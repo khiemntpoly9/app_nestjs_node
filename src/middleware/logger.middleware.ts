@@ -9,7 +9,7 @@ import { UserService } from 'src/modules/user/user.service';
 export class LoggerMiddleware implements NestMiddleware {
 	constructor(private readonly userService: UserService, private jwtService: JwtService) {}
 	async use(req: Request, res: Response, next: NextFunction) {
-		const token = req.cookies['access_token'];
+		const token = req?.cookies['access_token'];
 		if (token) {
 			const payload = await this.jwtService.verifyAsync(token, {
 				secret: jwtConstants.secret,

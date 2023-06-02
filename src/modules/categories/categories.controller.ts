@@ -15,9 +15,9 @@ import {
 import { CategoriesService } from './categories.service';
 import { categoryDto } from './dto/categories.dto';
 import { Response } from 'express';
-import { AuthGuard } from '../auth/auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller()
 export class CategoriesController {
@@ -36,7 +36,7 @@ export class CategoriesController {
 
 	// Thêm danh mục
 	@Roles(Role.QTV, Role.CTV)
-	@UseGuards(AuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@Post('categories')
 	async createCategory(@Body() categoryDto: categoryDto, @Res() res: Response) {
 		try {
@@ -49,7 +49,7 @@ export class CategoriesController {
 
 	// Sửa danh mục
 	@Roles(Role.QTV, Role.CTV)
-	@UseGuards(AuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@Patch('categories')
 	async updateCategory(@Query('id') id: number, @Body() categoryDto: categoryDto, @Res() res: Response) {
 		try {
@@ -62,7 +62,7 @@ export class CategoriesController {
 
 	// Xoá danh mục
 	@Roles(Role.QTV, Role.CTV)
-	@UseGuards(AuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@Delete('categories')
 	async deleteCategory(@Query('id') id: number, @Res() res: Response) {
 		try {

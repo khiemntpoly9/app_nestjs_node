@@ -16,7 +16,7 @@ export class UserService {
 	// Check tài khoản có tồn tại
 	async checkUserEmail(email: string): Promise<User> {
 		try {
-			const findEmailUser = this.userRepository
+			const findEmailUser = await this.userRepository
 				.createQueryBuilder('users')
 				.leftJoinAndSelect('users.role', 'role')
 				.select(['users.id_user', 'users.email', 'users.password', 'role.short_role'])

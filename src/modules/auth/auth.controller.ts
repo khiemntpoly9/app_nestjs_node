@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, Res, HttpException, HttpStatus, Post, Req } from '@nestjs/common';
+import { Body, Controller, Res, HttpException, HttpStatus, Post, Req, Get, UseGuards } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { authDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
+import { GoogleStrategy } from './guards/google.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService, private jwtService: JwtService) {}
 
@@ -21,8 +23,24 @@ export class AuthController {
 		}
 	}
 
-	// Đăng nhập
+	//Đăng nhập Passport
+	@UseGuards(LocalAuthGuard)
 	@Post('login')
+	async login(@Req() req: Request, @Res() res: Response) {
+		try {
+			const token = await this.authService.login(req.user);
+			return res
+				.status(HttpStatus.OK)
+				.cookie('access_token', token, { httpOnly: true })
+				.json({ message: 'Đăng nhập thành công!' });
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Đăng nhập
+	/* 
+	@Post('login/v1')
 	async loginAuth(@Body() authDto: authDto, @Res() res: Response) {
 		try {
 			const login = await this.authService.loginAuth(authDto);
@@ -34,6 +52,7 @@ export class AuthController {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	*/
 
 	// Đăng xuất
 	@Post('logout')
@@ -51,5 +70,18 @@ export class AuthController {
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	/* Google Auth */
+	@Get('google/login')
+	@UseGuards(GoogleStrategy)
+	handleLogin() {
+		return { message: 'Google Authencation' };
+	}
+
+	@Get('google/redirect')
+	@UseGuards(GoogleStrategy)
+	handleRedirect() {
+		return { message: 'Google OK' };
 	}
 }

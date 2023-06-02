@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/db/entity/user.entity';
-import { authDto } from './dto/auth.dto';
+import { authDto, authDtoGG } from './dto/auth.dto';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -38,6 +38,7 @@ export class AuthService {
 	}
 
 	// Đăng nhập
+	/*
 	async loginAuth(auth: authDto): Promise<any> {
 		try {
 			const user = await this.userService.checkUserEmail(auth.email);
@@ -57,6 +58,47 @@ export class AuthService {
 		} catch (error) {
 			throw new Error(error);
 		}
+	}
+	*/
+	// Đăng nhập Passport
+	async login(user: any) {
+		const payload = { userId: user.id_user, email: user.email, role: user.role.short_role };
+		const access_token = await this.jwtService.signAsync(payload);
+		// Lưu token vào db user
+		const saveToken = this.userService.saveTokenUser(user.email, access_token);
+		return access_token;
+	}
+
+	// Validate User Local
+	async validateUserLocal(email: string, pass: string): Promise<any> {
+		const user = await this.userService.checkUserEmail(email);
+		if (!user) {
+			throw new Error('Tài khoản không tồn tại!');
+		}
+		// So sánh mật khẩu
+		const passwordMatches = await bcrypt.compare(pass, user.password);
+		// User, Pass true
+		if (user && passwordMatches) {
+			const { password, ...result } = user;
+			return result;
+		} else {
+			throw new Error('Sai mật khẩu!');
+		}
+	}
+
+	// Validate User Google
+	async validateUserGoogle(details: authDtoGG) {
+		// check xem user đã tồn tại chưa
+		const user = await this.userService.checkUserEmail(details.email);
+		if (!user) {
+			throw new Error('Tài khoản không tồn tại!');
+		}
+		const payload = { userId: user.id_user, email: user.email, role: user.role.short_role };
+		const access_token = await this.jwtService.signAsync(payload);
+		// Lưu token vào db user
+		const saveToken = this.userService.saveTokenUser(details.email, access_token);
+		// console.log(details);
+		return access_token;
 	}
 
 	// Đăng xuất

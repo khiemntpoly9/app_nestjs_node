@@ -17,3 +17,14 @@ export class authDto {
 	@ApiProperty()
 	password: string;
 }
+
+export class authDtoGG {
+	@ApiProperty()
+	first_name: string;
+
+	@ApiProperty()
+	last_name: string;
+
+	@ApiProperty()
+	email: string;
+}

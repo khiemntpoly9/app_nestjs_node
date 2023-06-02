@@ -15,9 +15,7 @@ export class MailService {
 					username: 'Trung Khiêm',
 				},
 			})
-			.then(() => {
-				console.log('Gửi mail thành công!');
-			})
+			.then(() => {})
 			.catch((error) => {
 				console.log(error);
 			});

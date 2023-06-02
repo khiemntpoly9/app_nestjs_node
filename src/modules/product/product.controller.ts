@@ -19,12 +19,12 @@ import {
 import { Response } from 'express';
 import { ProductService } from './product.service';
 import { productDto } from './dto/product.dto';
-import { AuthGuard } from '../auth/auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { MulterOptions } from './multerOption';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller()
 export class ProductController {
@@ -35,7 +35,7 @@ export class ProductController {
 
 	// Thêm sản phẩm test
 	@Roles(Role.QTV, Role.CTV)
-	@UseGuards(AuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@Post('product')
 	@UseInterceptors(
 		FileFieldsInterceptor([{ name: 'img_thumbnail', maxCount: 1 }, { name: 'list_img' }], MulterOptions),
@@ -106,7 +106,7 @@ export class ProductController {
 
 	// Cập nhật sản phẩm
 	@Roles(Role.QTV, Role.CTV)
-	@UseGuards(AuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@Patch('product')
 	@UseInterceptors(
 		FileFieldsInterceptor([{ name: 'img_thumbnail', maxCount: 1 }, { name: 'list_img' }], MulterOptions),
@@ -171,7 +171,7 @@ export class ProductController {
 
 	// Xoá sản phẩm
 	@Roles(Role.QTV, Role.CTV)
-	@UseGuards(AuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@Delete('product')
 	async deleteProduct(@Query('id') id: number, @Res() res: Response) {
 		try {
@@ -183,7 +183,7 @@ export class ProductController {
 
 	// Xoá hình ảnh của sản phẩm
 	@Roles(Role.QTV, Role.CTV)
-	@UseGuards(AuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@Delete('product/image')
 	async deleteImgProdut(@Query('idp') idp: string, @Res() res: Response) {
 		try {
