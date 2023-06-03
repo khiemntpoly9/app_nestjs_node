@@ -16,12 +16,16 @@ import { AuthService } from './auth.service';
 import { authDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants, jwtVerify } from './constants';
-import { GoogleStrategy } from './guards/google.guard';
+import { GoogleGuard } from './guards/google.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import * as moment from 'moment-timezone';
 import { UserService } from '../user/user.service';
 import { MailService } from '../mail/mail.service';
 import * as bcrypt from 'bcrypt';
+
+interface User extends Request {
+	user: { email: string; firstName: string; lastName: string; accessToken: string; refreshToken: string };
+}
 
 @Controller('auth')
 export class AuthController {
@@ -94,15 +98,24 @@ export class AuthController {
 
 	/* Google Auth */
 	@Get('google/login')
-	@UseGuards(GoogleStrategy)
+	@UseGuards(GoogleGuard)
 	handleLogin() {
 		return { message: 'Google Authencation' };
 	}
 
+	// Google Auth Callback
 	@Get('google/redirect')
-	@UseGuards(GoogleStrategy)
-	handleRedirect() {
-		return { message: 'Google OK' };
+	@UseGuards(GoogleGuard)
+	async handleRedirect(@Req() req: User, @Res() res: Response) {
+		try {
+			const token = await this.authService.googleLogin(req);
+			return res
+				.status(HttpStatus.OK)
+				.cookie('access_token', token, { httpOnly: true })
+				.redirect('http://localhost:3000/api/user/admin');
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/* Verify Account */
@@ -125,14 +138,6 @@ export class AuthController {
 		return res.status(HttpStatus.OK).json({ message: 'Xác thực tài khoản thành công!' });
 	}
 
-	/*
-	Quên mật khẩu
-	- Nhận email của tài khoản
-	- Check xem có tài khoản đó không
-	- Có, trả về token và gửi mail kèm token
-	- User bấm vào link, gửi kèm token đó và mật khẩu mới về BE để check và xử lý
-	- Check xem token còn hạn không
-	 */
 	// Recovery Password
 	@Post('recovery-pass')
 	async recoveryPass(@Body() data: { email: string }, @Res() res: Response) {

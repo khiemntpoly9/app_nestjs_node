@@ -24,10 +24,10 @@ export class User {
 	@Column({ type: 'varchar', length: 255, unique: true })
 	email: string;
 
-	@Column({ type: 'varchar', length: 10, unique: true })
+	@Column({ type: 'varchar', length: 10, unique: true, nullable: true })
 	phone: string;
 
-	@Column({ type: 'varchar', length: 255 })
+	@Column({ type: 'varchar', length: 255, nullable: true })
 	password: string;
 
 	@Column({ type: 'tinyint', default: 0 })

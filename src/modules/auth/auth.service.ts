@@ -7,6 +7,7 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { jwtVerify } from './constants';
 import { MailService } from '../mail/mail.service';
+import { access } from 'fs';
 
 const saltOrRounds = 10;
 @Injectable()
@@ -113,18 +114,30 @@ export class AuthService {
 		}
 	}
 
-	// Validate User Google
-	async validateUserGoogle(details: authDtoGG) {
-		// check xem user đã tồn tại chưa
-		const user = await this.userService.checkUserEmail(details.email);
-		if (!user) {
-			throw new Error('Tài khoản không tồn tại!');
+	// Xác thực đăng nhập Google
+	async googleLogin(req: {
+		user: { email: string; firstName: string; lastName: string; accessToken: string; refreshToken: string };
+	}): Promise<string> {
+		if (!req.user) {
+			throw new Error('No user from google!');
 		}
-		const payload = { userId: user.id_user, email: user.email, role: user.role.short_role };
+		// Kiểm tra user
+		const user = await this.userService.checkUserEmail(req.user.email);
+		if (!user) {
+			// Đăng ký nhanh cho user chưa tồn tại
+			const user = await this.userService.registerUser(req.user);
+		}
+		// Token
+		const payload = {
+			userId: user.id_user,
+			email: user.email,
+			role: user.role.short_role,
+			verify: user.verify,
+		};
 		const access_token = await this.jwtService.signAsync(payload);
 		// Lưu token vào db user
-		const saveToken = this.userService.saveTokenUser(details.email, access_token);
-		// console.log(details);
+		const saveToken = this.userService.saveTokenUser(user.email, access_token);
+		// Trả về token
 		return access_token;
 	}
 

@@ -65,6 +65,24 @@ export class UserService {
 		}
 	}
 
+	// Register User Google
+	async registerUser(user: { email: string; firstName: string; lastName: string }) {
+		const regUser = await this.userRepository
+			.createQueryBuilder('users')
+			.insert()
+			.into(User)
+			.values({
+				first_name: user.firstName,
+				last_name: user.lastName,
+				email: user.email,
+				phone: null,
+				password: null,
+				verify: 1,
+			})
+			.execute();
+		return regUser;
+	}
+
 	// Sửa thông tin tài khoản
 	async updateUser(id: number, data: userDto): Promise<any> {
 		try {
