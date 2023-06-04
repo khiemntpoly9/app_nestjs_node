@@ -118,7 +118,7 @@ export class AuthController {
 		}
 	}
 
-	/* Verify Account */
+	/* Xác nhận tài khoản */
 	@Get('verify-account')
 	async verifyAccout(@Query('token') token: string, @Res() res: Response) {
 		const payload = await this.jwtService.verifyAsync(token, {
@@ -138,7 +138,7 @@ export class AuthController {
 		return res.status(HttpStatus.OK).json({ message: 'Xác thực tài khoản thành công!' });
 	}
 
-	// Recovery Password
+	// Quên mật khẩu
 	@Post('recovery-pass')
 	async recoveryPass(@Body() data: { email: string }, @Res() res: Response) {
 		try {
@@ -163,7 +163,7 @@ export class AuthController {
 		}
 	}
 
-	// Đổi mật khẩu mới
+	// Đổi mật khẩu
 	@Post('change-password')
 	async changePass(@Body() data: { token: string; password: string }, @Res() res: Response) {
 		try {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import {
 	Entity,
@@ -7,8 +8,11 @@ import {
 	UpdateDateColumn,
 	JoinColumn,
 	ManyToOne,
+	ManyToMany,
+	JoinTable,
 } from 'typeorm';
 import { Role } from './role.entity';
+import { Product } from './product.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -48,4 +52,10 @@ export class User {
 	@ManyToOne(() => Role, (role) => role.user)
 	@JoinColumn({ name: 'id_role', referencedColumnName: 'id_role' })
 	role: Role;
+
+	// many to many product	- user
+	// @ManyToMany(() => Product, (product) => product.user)
+	// @JoinTable({
+	// 	name: 'user_product',
+	// })
 }

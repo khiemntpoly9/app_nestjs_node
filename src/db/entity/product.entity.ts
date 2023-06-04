@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import {
 	Entity,
@@ -17,6 +18,7 @@ import { Brand } from './brand.entity';
 import { ImgProduct } from './imageproduct.entity';
 import { DeltailProd } from './detail_prod.entity';
 import { Color } from './color.entity';
+import { User } from './user.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -83,6 +85,7 @@ export class Product {
 	@OneToOne(() => DeltailProd, (detailProd) => detailProd.product)
 	detail_prod: DeltailProd;
 
+	// Màu sản phẩm
 	@ManyToMany(() => Color, (color) => color.product, { cascade: true })
 	@JoinTable({
 		name: 'product_color',
@@ -90,4 +93,7 @@ export class Product {
 		inverseJoinColumn: { name: 'color_id', referencedColumnName: 'id_color' },
 	})
 	color: Color[];
+
+	//many to many product	- user
+	// @ManyToMany(() => User, (user) => user.product)
 }
