@@ -193,4 +193,59 @@ export class ProductController {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	// Tìm kiếm sản phẩm
+	@Get('product/search')
+	async searchProduct(@Query('name') name: string, @Res() res: Response) {
+		try {
+			const data = await this.productService.searchProduct(name);
+			return res.status(HttpStatus.OK).json(data);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Tìm kiếm sản phẩm theo danh mục
+	@Get('product/category')
+	async searchProductCategory(@Query('id') id: number, @Res() res: Response) {
+		try {
+			const data = await this.productService.getProductByCategory(id);
+			return res.status(HttpStatus.OK).json(data);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Tìm kiếm sản phẩm theo thương hiệu
+	@Get('product/brand')
+	async searchProductBrand(@Query('id') id: number, @Res() res: Response) {
+		try {
+			const data = await this.productService.getProductByBrand(id);
+			return res.status(HttpStatus.OK).json(data);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Tìm kiếm sản phẩm theo khoảng giá
+	@Get('product/price')
+	async searchProductPrice(@Query('min') min: number, @Query('max') max: number, @Res() res: Response) {
+		try {
+			const data = await this.productService.getProductByPriceRange(min, max);
+			return res.status(HttpStatus.OK).json(data);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Lấy tất cả sản phẩm có phân trang
+	@Get('product-pag')
+	async getAllProductPag(@Query('page') page: number, @Query('limit') limit: number, @Res() res: Response) {
+		try {
+			const data = await this.productService.findAllPagination(page, limit);
+			return res.status(HttpStatus.OK).json(data);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

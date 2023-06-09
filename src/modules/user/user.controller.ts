@@ -10,6 +10,7 @@ import {
 	Body,
 	Res,
 	Patch,
+	Query,
 } from '@nestjs/common';
 import { Request } from 'express';
 import * as bcrypt from 'bcrypt';
@@ -60,7 +61,7 @@ export class UserController {
 	}
 
 	// Xoá tài khoản
-	@Roles(Role.User)
+	@Roles(Role.User, Role.CTV, Role.QTV)
 	@UseGuards(JwtAuthGuard)
 	@Post('delete')
 	async deleteUser(@Body() password: string, @Res() res: Response, @Req() req: User) {
@@ -78,14 +79,27 @@ export class UserController {
 		}
 	}
 
-	// Test
-	@Roles(Role.CTV, Role.QTV)
+	// Lấy danh sách tài khoản
+	@Roles(Role.QTV)
 	@UseGuards(JwtAuthGuard)
-	@Get('admin')
-	async testAdmin(@Req() req: Request) {
+	@Get('list')
+	async listUser(@Res() res: Response) {
 		try {
-			console.log(req.user);
-			return req.user;
+			const listUser = await this.userService.getListUser();
+			return res.status(HttpStatus.OK).json(listUser);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Lấy danh sách tài khoản theo role
+	@Roles(Role.QTV)
+	@UseGuards(JwtAuthGuard)
+	@Get('list-role')
+	async listUserByRole(@Query('role') role: string, @Res() res: Response) {
+		try {
+			const listUser = await this.userService.getListUserByRole(role);
+			return res.status(HttpStatus.OK).json(listUser);
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
