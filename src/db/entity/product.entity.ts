@@ -95,14 +95,7 @@ export class Product {
 	})
 	color: Color[];
 
-	// Sản phẩm yêu thích
-	// @ManyToMany(() => User, (user) => user.product)
-	// favorite: User[];
-
-	// Many to many product to favorites
+	// Mối quan hệ favorites
 	@OneToMany(() => Favorites, (favorites) => favorites.product)
 	favorites: Favorites[];
-
-	// @ManyToMany(() => Product, (product) => product.favorite)
-	// favorites: Product[];
 }

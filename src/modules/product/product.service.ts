@@ -77,7 +77,7 @@ export class ProductService {
 		}
 	}
 
-	// Lấy all tất cả sản phẩm
+	// Lấy all tất cả sản phẩm, không phân trang
 	async findAll(): Promise<Product[]> {
 		try {
 			const result = await this.productRepository
@@ -113,6 +113,51 @@ export class ProductService {
 					'color.hex_color',
 				])
 				.orderBy('products.createdAt', 'DESC')
+				.getMany();
+			return result;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy tất cả sản phẩm, có phân trang
+	async findAllPagination(page: number, limit: number): Promise<Product[]> {
+		try {
+			const result = await this.productRepository
+				.createQueryBuilder('products')
+				.leftJoinAndSelect('products.categories', 'categories')
+				.leftJoinAndSelect('products.brands', 'brands')
+				.leftJoinAndSelect('products.img_prod', 'img_prod')
+				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
+				.leftJoinAndSelect('products.color', 'color')
+				.select([
+					/* Product */
+					'products.id_product',
+					'products.name_prod',
+					'products.price_prod',
+					'products.img_thumbnail',
+					'products.public_id',
+					'products.createdAt',
+					'products.updatedAt',
+					/* Categories */
+					'categories.id_categories',
+					'categories.name_categories',
+					/* Brand */
+					'brands.id_brand',
+					'brands.name_brand',
+					/* Images  */
+					'img_prod.id_images',
+					'img_prod.url',
+					'img_prod.public_id',
+					/* Detail Product */
+					'detail_prod.detail_prod',
+					/* Color */
+					'color.name_color',
+					'color.hex_color',
+				])
+				.orderBy('products.createdAt', 'DESC')
+				.skip((page - 1) * limit)
+				.take(limit)
 				.getMany();
 			return result;
 		} catch (error) {
@@ -272,6 +317,103 @@ export class ProductService {
 			}
 			// Xoá product
 			await this.productRepository.remove(product);
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Tìm kiếm sản phẩm theo tên
+	async searchProduct(keyword: string): Promise<Product[]> {
+		try {
+			const result = await this.productRepository
+				.createQueryBuilder('products')
+				.leftJoinAndSelect('products.img_prod', 'img_prod')
+				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
+				.leftJoinAndSelect('products.brands', 'brands')
+				.leftJoinAndSelect('products.categories', 'categories')
+				.leftJoinAndSelect('products.color', 'color')
+				.where('LOWER(SUBSTRING(products.name_prod, 1, 1)) = LOWER(:firstLetter)', {
+					firstLetter: keyword.charAt(0),
+				})
+				.orderBy('products.createdAt', 'DESC')
+				.getMany();
+			return result;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy sản phẩm theo danh mục
+	async getProductByCategory(id: number): Promise<Product[]> {
+		try {
+			const result = await this.productRepository
+				.createQueryBuilder('products')
+				.leftJoinAndSelect('products.img_prod', 'img_prod')
+				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
+				.leftJoinAndSelect('products.brands', 'brands')
+				.leftJoinAndSelect('products.categories', 'categories')
+				.leftJoinAndSelect('products.color', 'color')
+				.where('products.id_category = :id', { id: id })
+				.orderBy('products.createdAt', 'DESC')
+				.getMany();
+			return result;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy sản phẩm theo thương hiệu
+	async getProductByBrand(id: number): Promise<Product[]> {
+		try {
+			const result = await this.productRepository
+				.createQueryBuilder('products')
+				.leftJoinAndSelect('products.img_prod', 'img_prod')
+				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
+				.leftJoinAndSelect('products.brands', 'brands')
+				.leftJoinAndSelect('products.categories', 'categories')
+				.leftJoinAndSelect('products.color', 'color')
+				.where('products.id_brand = :id', { id: id })
+				.orderBy('products.createdAt', 'DESC')
+				.getMany();
+			return result;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy sản phẩm theo giá
+	async getProductByPrice(price: number): Promise<Product[]> {
+		try {
+			const result = await this.productRepository
+				.createQueryBuilder('products')
+				.leftJoinAndSelect('products.img_prod', 'img_prod')
+				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
+				.leftJoinAndSelect('products.brands', 'brands')
+				.leftJoinAndSelect('products.categories', 'categories')
+				.leftJoinAndSelect('products.color', 'color')
+				.where('products.price_prod <= :price', { price: price })
+				.orderBy('products.createdAt', 'DESC')
+				.getMany();
+			return result;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy sản phẩm trong khoảng giá
+	async getProductByPriceRange(min: number, max: number): Promise<Product[]> {
+		try {
+			const result = await this.productRepository
+				.createQueryBuilder('products')
+				.leftJoinAndSelect('products.img_prod', 'img_prod')
+				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
+				.leftJoinAndSelect('products.brands', 'brands')
+				.leftJoinAndSelect('products.categories', 'categories')
+				.leftJoinAndSelect('products.color', 'color')
+				.where('products.price_prod >= :min AND products.price_prod <= :max', { min: min, max: max })
+				.orderBy('products.createdAt', 'DESC')
+				.getMany();
+			return result;
 		} catch (error) {
 			throw new Error(error);
 		}

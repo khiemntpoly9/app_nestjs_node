@@ -130,7 +130,7 @@ export class UserService {
 		}
 	}
 
-	// Verify Accout
+	// Verify Account
 	verifyUser(email: string) {
 		try {
 			const verify = this.userRepository
@@ -168,6 +168,63 @@ export class UserService {
 				.from(User)
 				.where('id_user = :id', { id })
 				.execute();
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Đổi role tài khoản
+	// async changeRoleUser(id: number, role: string): Promise<boolean> {
+	// 	try {
+	// 		const changeRole = await this.userRepository
+	// 			.createQueryBuilder('users')
+	// 			.update(User)
+	// 			.set({ role: role })
+	// 			.where('id_user = :id', { id })
+	// 			.execute();
+	// 		return changeRole;
+	// 	} catch (error) {
+	// 		throw new Error(error);
+	// 	}
+	// }
+
+	// Lấy danh sách tài khoản
+	async getListUser(): Promise<User[]> {
+		try {
+			const listUser = await this.userRepository
+				.createQueryBuilder('users')
+				.select([
+					'users.id_user',
+					'users.first_name',
+					'users.last_name',
+					'users.email',
+					'users.phone',
+					'users.createdAt',
+				])
+				.getMany();
+			return listUser;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy danh sách tài khoản theo role
+	async getListUserByRole(role: string): Promise<User[]> {
+		try {
+			const listUser = await this.userRepository
+				.createQueryBuilder('users')
+				.leftJoinAndSelect('users.role', 'role')
+				.select([
+					'users.id_user',
+					'users.first_name',
+					'users.last_name',
+					'users.email',
+					'users.phone',
+					'users.createdAt',
+				])
+				.where('role.short_role = :role', { role })
+				.getMany();
+			return listUser;
 		} catch (error) {
 			throw new Error(error);
 		}
