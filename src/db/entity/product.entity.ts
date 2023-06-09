@@ -19,6 +19,7 @@ import { ImgProduct } from './imageproduct.entity';
 import { DeltailProd } from './detail_prod.entity';
 import { Color } from './color.entity';
 import { User } from './user.entity';
+import { Favorites } from './favotites.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -94,6 +95,14 @@ export class Product {
 	})
 	color: Color[];
 
-	//many to many product	- user
+	// Sản phẩm yêu thích
 	// @ManyToMany(() => User, (user) => user.product)
+	// favorite: User[];
+
+	// Many to many product to favorites
+	@OneToMany(() => Favorites, (favorites) => favorites.product)
+	favorites: Favorites[];
+
+	// @ManyToMany(() => Product, (product) => product.favorite)
+	// favorites: Product[];
 }

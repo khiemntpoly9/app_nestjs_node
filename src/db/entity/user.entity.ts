@@ -53,9 +53,11 @@ export class User {
 	@JoinColumn({ name: 'id_role', referencedColumnName: 'id_role' })
 	role: Role;
 
-	// many to many product	- user
-	// @ManyToMany(() => Product, (product) => product.user)
-	// @JoinTable({
-	// 	name: 'user_product',
-	// })
+	@ManyToMany(() => Product, (product) => product.favorites)
+	@JoinTable({
+		name: 'favorites',
+		joinColumn: { name: 'id_user', referencedColumnName: 'id_user' },
+		inverseJoinColumn: { name: 'id_product', referencedColumnName: 'id_product' },
+	})
+	product: Product[];
 }

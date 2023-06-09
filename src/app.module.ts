@@ -15,6 +15,7 @@ import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { MailModule } from './modules/mail/mail.module';
 import { PassportModule } from '@nestjs/passport';
+import { FavoriteModule } from './modules/favorite/favorite.module';
 /* */
 
 @Module({
@@ -28,6 +29,7 @@ import { PassportModule } from '@nestjs/passport';
 		CloudinaryModule,
 		MailModule,
 		PassportModule,
+		FavoriteModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
