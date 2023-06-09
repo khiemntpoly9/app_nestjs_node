@@ -104,4 +104,18 @@ export class UserController {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	// Đổi role tài khoản
+	@Roles(Role.QTV)
+	@UseGuards(JwtAuthGuard)
+	@Patch('change-role')
+	async changeRole(@Body() user: userDto, @Res() res: Response) {
+		try {
+			const changeRole = await this.userService.changeRoleUser(user.id_user, user.id_role);
+			// Đổi role, cập nhật token
+			return res.status(HttpStatus.OK).json({ message: 'Đổi role thành công!' });
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
