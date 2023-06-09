@@ -16,15 +16,6 @@ export class productDto {
 	detail_prod: string;
 
 	@ApiProperty()
-	description_prod: string | null;
-
-	@ApiProperty()
-	specification_prod: string | null;
-
-	@ApiProperty()
-	preserve_prod: string | null;
-
-	@ApiProperty()
 	price_prod: number;
 
 	@ApiProperty()

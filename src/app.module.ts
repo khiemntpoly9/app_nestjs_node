@@ -16,6 +16,7 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
 import { MailModule } from './modules/mail/mail.module';
 import { PassportModule } from '@nestjs/passport';
 import { FavoriteModule } from './modules/favorite/favorite.module';
+import { BrandModule } from './modules/brand/brand.module';
 /* */
 
 @Module({
@@ -30,6 +31,7 @@ import { FavoriteModule } from './modules/favorite/favorite.module';
 		MailModule,
 		PassportModule,
 		FavoriteModule,
+		BrandModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
