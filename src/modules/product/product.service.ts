@@ -50,9 +50,6 @@ export class ProductService {
 			const detailProd = new DeltailProd();
 			detailProd.id_product = id_prod;
 			detailProd.detail_prod = productDto.detail_prod;
-			detailProd.description_prod = productDto.description_prod;
-			detailProd.specification_prod = productDto.specification_prod;
-			detailProd.preserve_prod = productDto.preserve_prod;
 			// Save
 			const saveProductDetail = await this.prodDetailRepository.save(detailProd);
 			return saveProductDetail;
@@ -111,9 +108,6 @@ export class ProductService {
 					'img_prod.public_id',
 					/* Detail Product */
 					'detail_prod.detail_prod',
-					'detail_prod.description_prod',
-					'detail_prod.specification_prod',
-					'detail_prod.preserve_prod',
 					/* Color */
 					'color.name_color',
 					'color.hex_color',
@@ -157,9 +151,6 @@ export class ProductService {
 					'img_prod.url',
 					/* Detail Product */
 					'detail_prod.detail_prod',
-					'detail_prod.description_prod',
-					'detail_prod.specification_prod',
-					'detail_prod.preserve_prod',
 					/* Color */
 					'color.name_color',
 					'color.hex_color',
