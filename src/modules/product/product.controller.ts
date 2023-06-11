@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prettier/prettier */
 import {
 	Controller,
 	Get,
@@ -15,6 +14,7 @@ import {
 	UseGuards,
 	UseInterceptors,
 	UploadedFiles,
+	Req,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ProductService } from './product.service';
@@ -25,15 +25,25 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { MulterOptions } from './multerOption';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ManagerService } from '../manager/manager.service';
+
+interface User extends Request {
+	user: {
+		userId: number;
+		email: string;
+		role: string;
+	};
+}
 
 @Controller()
 export class ProductController {
 	constructor(
 		private readonly productService: ProductService,
+		private readonly managerService: ManagerService,
 		private cloudinaryService: CloudinaryService,
 	) {}
 
-	// Thêm sản phẩm test
+	// Thêm sản phẩm
 	@Roles(Role.QTV, Role.CTV)
 	@UseGuards(JwtAuthGuard)
 	@Post('product')
@@ -46,6 +56,7 @@ export class ProductController {
 		files: { img_thumbnail: Express.Multer.File; list_img: Express.Multer.File[] },
 		@Body() productDto: productDto,
 		@Res() res: Response,
+		@Req() req: User,
 	) {
 		try {
 			// Upload thumbnail
@@ -76,6 +87,14 @@ export class ProductController {
 				};
 			});
 			const addImgProduct = await this.productService.addImgProduct(newProductId, list_img);
+			// Ghi lịch sử hành động
+			const log = await this.managerService.createActionHistory(
+				req.user.userId,
+				'create',
+				'Thêm sản phẩm',
+				newProductId,
+			);
+			// final
 			return res.status(HttpStatus.OK).json({ message: 'Tạo sản phẩm thành công!' });
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -118,6 +137,7 @@ export class ProductController {
 		@Query('id') id: number,
 		@Body() productDto: productDto,
 		@Res() res: Response,
+		@Req() req: User,
 	) {
 		try {
 			// Check xem có sản phẩm không
@@ -163,6 +183,13 @@ export class ProductController {
 			const updateProduct = await this.productService.updateProduct(id, productDto);
 			// Chỉnh sửa sản phẩm chi tiết
 			const updateProductDetail = await this.productService.updateProductDetai(id, productDto);
+			// Ghi lịch sử hành động
+			const log = await this.managerService.createActionHistory(
+				req.user.userId,
+				'update',
+				'Sửa sản phẩm',
+				id,
+			);
 			return res.status(HttpStatus.OK).json({ message: 'Cập nhật sản phẩm thành công!' });
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -173,9 +200,17 @@ export class ProductController {
 	@Roles(Role.QTV, Role.CTV)
 	@UseGuards(JwtAuthGuard)
 	@Delete('product')
-	async deleteProduct(@Query('id') id: number, @Res() res: Response) {
+	async deleteProduct(@Query('id') id: number, @Res() res: Response, @Req() req: User) {
 		try {
 			const deleteProd = await this.productService.deleteProduct(id);
+			// Ghi lịch sử hành động
+			const log = await this.managerService.createActionHistory(
+				req.user.userId,
+				'delete',
+				'Xoá sản phẩm',
+				id,
+			);
+			return res.status(HttpStatus.OK).json({ message: 'Xoá sản phẩm thành công!' });
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
