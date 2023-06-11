@@ -43,4 +43,34 @@ export class ManagerService {
 			throw new Error(error);
 		}
 	}
+
+	// Lấy lịch sử hành động theo user
+	async getActionHistoryByUser(id_user: number): Promise<ActionHistory[]> {
+		try {
+			const actionHistory = await this.actionHistoryRepository.find({
+				where: {
+					id_user: id_user,
+				},
+				relations: ['user'],
+			});
+			return actionHistory;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy lịch sử hành động theo sản phẩm
+	async getActionHistoryByProduct(id_product: number): Promise<ActionHistory[]> {
+		try {
+			const actionHistory = await this.actionHistoryRepository.find({
+				where: {
+					id_product: id_product,
+				},
+				relations: ['user'],
+			});
+			return actionHistory;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
 }
