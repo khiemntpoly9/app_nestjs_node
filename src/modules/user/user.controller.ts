@@ -12,10 +12,9 @@ import {
 	Patch,
 	Query,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { UserService } from './user.service';
-import { Response } from 'express';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

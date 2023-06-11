@@ -50,8 +50,8 @@ export class Product {
 	@Column({ type: 'varchar', length: 255 })
 	public_id: string;
 
-	@Column({ type: 'int' })
-	discount: number;
+	@Column({ type: 'int', default: 1 })
+	quantity: number;
 
 	@CreateDateColumn({
 		name: 'createdAt',
