@@ -57,6 +57,7 @@ export class OrderController {
 		}
 	}
 
+	// Lấy đơn hàng chưa thanh toán
 	@Roles(Role.User, Role.CTV, Role.QTV)
 	@UseGuards(JwtAuthGuard)
 	@Get()
@@ -64,6 +65,19 @@ export class OrderController {
 		try {
 			const getCart = await this.orderService.getCart(req.user.userId);
 			return res.status(HttpStatus.OK).json(getCart);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Lấy giỏ hàng đã thanh toán
+	@Roles(Role.User, Role.CTV, Role.QTV)
+	@UseGuards(JwtAuthGuard)
+	@Get('paid')
+	async getCartPaid(@Res() res: Response, @Req() req: User) {
+		try {
+			const getCartPaid = await this.orderService.getCartPaid(req.user.userId);
+			return res.status(HttpStatus.OK).json(getCartPaid);
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

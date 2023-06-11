@@ -137,4 +137,31 @@ export class OrderService {
 			throw new Error(error);
 		}
 	}
+
+	// Lấy đơn hàng đã thanh toán
+	async getCartPaid(id_user: number): Promise<Order[]> {
+		try {
+			const orders = await this.orderRepository
+				.createQueryBuilder('orders')
+				.leftJoinAndSelect('orders.order_items', 'orderItem')
+				.leftJoinAndSelect('orderItem.product', 'product')
+				.where('orders.id_user = :id_user', { id_user })
+				.andWhere('orders.status = :status', { status: 1 })
+				.select([
+					'orders.id_order',
+					'orders.id_user',
+					'orders.total',
+					'orderItem.id_order_item',
+					'orderItem.quantity',
+					'orderItem.price',
+					'product.name_prod',
+					'product.price_prod',
+					'product.img_thumbnail',
+				])
+				.getMany();
+			return orders;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
 }
