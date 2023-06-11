@@ -12,10 +12,9 @@ import {
 	Patch,
 	Query,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { UserService } from './user.service';
-import { Response } from 'express';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -100,6 +99,20 @@ export class UserController {
 		try {
 			const listUser = await this.userService.getListUserByRole(role);
 			return res.status(HttpStatus.OK).json(listUser);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Đổi role tài khoản
+	@Roles(Role.QTV)
+	@UseGuards(JwtAuthGuard)
+	@Patch('change-role')
+	async changeRole(@Body() user: userDto, @Res() res: Response) {
+		try {
+			const changeRole = await this.userService.changeRoleUser(user.id_user, user.id_role);
+			// Đổi role, cập nhật token
+			return res.status(HttpStatus.OK).json({ message: 'Đổi role thành công!' });
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

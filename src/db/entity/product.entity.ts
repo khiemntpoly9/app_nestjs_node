@@ -20,6 +20,7 @@ import { DeltailProd } from './detail_prod.entity';
 import { Color } from './color.entity';
 import { User } from './user.entity';
 import { Favorites } from './favotites.entity';
+import { OrderItem } from './order_item.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -50,8 +51,8 @@ export class Product {
 	@Column({ type: 'varchar', length: 255 })
 	public_id: string;
 
-	@Column({ type: 'int' })
-	discount: number;
+	@Column({ type: 'int', default: 1 })
+	quantity: number;
 
 	@CreateDateColumn({
 		name: 'createdAt',
@@ -98,4 +99,8 @@ export class Product {
 	// Mối quan hệ favorites
 	@OneToMany(() => Favorites, (favorites) => favorites.product)
 	favorites: Favorites[];
+
+	// Cart
+	@OneToMany(() => OrderItem, (orderItem) => orderItem.product)
+	orderItems: OrderItem[];
 }

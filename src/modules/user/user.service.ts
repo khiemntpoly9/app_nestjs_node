@@ -2,6 +2,7 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/db/entity/user.entity';
 import { Repository } from 'typeorm';
 import { userDto } from './dto/user.dto';
@@ -11,6 +12,7 @@ export class UserService {
 	constructor(
 		@InjectRepository(User)
 		private userRepository: Repository<User>,
+		private readonly jwtService: JwtService,
 	) {}
 
 	// Lấy thông tin tài khoản
@@ -162,31 +164,51 @@ export class UserService {
 	// Xoá tài khoản
 	deleteUser(id: number) {
 		try {
+			// Xoá tài khoản
 			const actionDelete = this.userRepository
 				.createQueryBuilder('users')
 				.delete()
 				.from(User)
 				.where('id_user = :id', { id })
 				.execute();
+			// Xoá data yêu thích
+			// Xoá data giỏ hàng
 		} catch (error) {
 			throw new Error(error);
 		}
 	}
 
 	// Đổi role tài khoản
-	// async changeRoleUser(id: number, role: string): Promise<boolean> {
-	// 	try {
-	// 		const changeRole = await this.userRepository
-	// 			.createQueryBuilder('users')
-	// 			.update(User)
-	// 			.set({ role: role })
-	// 			.where('id_user = :id', { id })
-	// 			.execute();
-	// 		return changeRole;
-	// 	} catch (error) {
-	// 		throw new Error(error);
-	// 	}
-	// }
+	async changeRoleUser(id: number, role: number): Promise<void> {
+		try {
+			const changeRole = await this.userRepository
+				.createQueryBuilder('users')
+				.update(User)
+				.set({ id_role: role })
+				.where('id_user = :id', { id })
+				.returning(['id_user', 'email', 'id_role', 'verify'])
+				.execute();
+			// Lấy data sau khi update
+			const updateUser = changeRole.raw[0];
+			const payload = {
+				userId: updateUser.id_user,
+				email: updateUser.email,
+				role: updateUser.id_role,
+				verify: updateUser.verify,
+			};
+			// Tạo token
+			const token = this.jwtService.sign(payload);
+			// Lưu token
+			const saveToken = this.userRepository
+				.createQueryBuilder('users')
+				.update(User)
+				.set({ token: token })
+				.where('id_user = :id', { id })
+				.execute();
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
 
 	// Lấy danh sách tài khoản
 	async getListUser(): Promise<User[]> {

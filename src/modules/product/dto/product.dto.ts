@@ -23,4 +23,7 @@ export class productDto {
 
 	@ApiProperty()
 	style_prod: number | null;
+
+	@ApiProperty()
+	quantity: number;
 }
