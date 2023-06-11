@@ -166,7 +166,7 @@ export class ProductService {
 	}
 
 	// Lấy sản phẩm chi tiết
-	async getProductId(id: number): Promise<any> {
+	async getProductId(id: number): Promise<Product> {
 		try {
 			const result = await this.productRepository
 				.createQueryBuilder('products')

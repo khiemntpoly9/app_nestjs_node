@@ -18,6 +18,7 @@ import { PassportModule } from '@nestjs/passport';
 import { FavoriteModule } from './modules/favorite/favorite.module';
 import { BrandModule } from './modules/brand/brand.module';
 import { OrderModule } from './modules/order/order.module';
+import { ManagerModule } from './modules/manager/manager.module';
 /* */
 
 @Module({
@@ -34,6 +35,7 @@ import { OrderModule } from './modules/order/order.module';
 		FavoriteModule,
 		BrandModule,
 		OrderModule,
+		ManagerModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
