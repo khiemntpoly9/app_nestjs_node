@@ -110,4 +110,31 @@ export class OrderService {
 			throw new Error(error);
 		}
 	}
+
+	// Lấy giỏ hàng theo user
+	async getCart(id_user: number): Promise<Order> {
+		try {
+			const cart = await this.orderRepository
+				.createQueryBuilder('orders')
+				.leftJoinAndSelect('orders.order_items', 'orderItem')
+				.leftJoinAndSelect('orderItem.product', 'product')
+				.where('orders.id_user = :id_user', { id_user })
+				.andWhere('orders.status = :status', { status: 0 })
+				.select([
+					'orders.id_order',
+					'orders.id_user',
+					'orders.total',
+					'orderItem.id_order_item',
+					'orderItem.quantity',
+					'orderItem.price',
+					'product.name_prod',
+					'product.price_prod',
+					'product.img_thumbnail',
+				])
+				.getOne();
+			return cart;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
 }

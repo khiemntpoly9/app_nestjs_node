@@ -1,12 +1,20 @@
 /* eslint-disable prettier/prettier */
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+	Entity,
+	Column,
+	PrimaryGeneratedColumn,
+	CreateDateColumn,
+	UpdateDateColumn,
+	OneToMany,
+} from 'typeorm';
+import { OrderItem } from './order_item.entity';
 
 @Entity({ name: 'orders' })
 export class Order {
-	@PrimaryGeneratedColumn({ type: 'bigint' })
+	@PrimaryGeneratedColumn({ type: 'bigint', name: 'id_order' })
 	id_order: number;
 
-	@Column({ type: 'int' })
+	@Column({ type: 'int', name: 'id_user' })
 	id_user: number;
 
 	@Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
@@ -20,4 +28,7 @@ export class Order {
 
 	@UpdateDateColumn()
 	updatedAt: Date;
+
+	@OneToMany(() => OrderItem, (orderItem) => orderItem.order)
+	order_items: OrderItem[];
 }

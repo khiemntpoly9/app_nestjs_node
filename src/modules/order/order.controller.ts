@@ -2,6 +2,7 @@
 import {
 	Body,
 	Controller,
+	Get,
 	HttpException,
 	HttpStatus,
 	Post,
@@ -55,6 +56,16 @@ export class OrderController {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-}
 
-// id user, id product, quantity
+	@Roles(Role.User, Role.CTV, Role.QTV)
+	@UseGuards(JwtAuthGuard)
+	@Get()
+	async getCart(@Res() res: Response, @Req() req: User) {
+		try {
+			const getCart = await this.orderService.getCart(req.user.userId);
+			return res.status(HttpStatus.OK).json(getCart);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+}

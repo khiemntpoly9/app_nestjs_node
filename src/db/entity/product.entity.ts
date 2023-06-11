@@ -20,6 +20,7 @@ import { DeltailProd } from './detail_prod.entity';
 import { Color } from './color.entity';
 import { User } from './user.entity';
 import { Favorites } from './favotites.entity';
+import { OrderItem } from './order_item.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -98,4 +99,8 @@ export class Product {
 	// Mối quan hệ favorites
 	@OneToMany(() => Favorites, (favorites) => favorites.product)
 	favorites: Favorites[];
+
+	// Cart
+	@OneToMany(() => OrderItem, (orderItem) => orderItem.product)
+	orderItems: OrderItem[];
 }
