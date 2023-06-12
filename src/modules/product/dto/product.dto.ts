@@ -26,4 +26,7 @@ export class productDto {
 
 	@ApiProperty()
 	quantity: number;
+
+	@ApiProperty()
+	show_prod: number;
 }

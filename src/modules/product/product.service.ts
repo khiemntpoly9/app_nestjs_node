@@ -36,6 +36,8 @@ export class ProductService {
 			product.style_prod = productDto.style_prod;
 			product.img_thumbnail = up_thumbnail.secure_url;
 			product.public_id = up_thumbnail.public_id;
+			product.quantity = productDto.quantity;
+			product.show_prod = productDto.show_prod;
 			//
 			const saveProduct = await this.productRepository.save(product);
 			return saveProduct;
@@ -87,6 +89,7 @@ export class ProductService {
 				.leftJoinAndSelect('products.img_prod', 'img_prod')
 				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
 				.leftJoinAndSelect('products.color', 'color')
+				.where('products.show_prod = 1')
 				.select([
 					/* Product */
 					'products.id_product',
@@ -130,6 +133,7 @@ export class ProductService {
 				.leftJoinAndSelect('products.img_prod', 'img_prod')
 				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
 				.leftJoinAndSelect('products.color', 'color')
+				.where('products.show_prod = 1')
 				.select([
 					/* Product */
 					'products.id_product',
@@ -332,7 +336,8 @@ export class ProductService {
 				.leftJoinAndSelect('products.brands', 'brands')
 				.leftJoinAndSelect('products.categories', 'categories')
 				.leftJoinAndSelect('products.color', 'color')
-				.where('LOWER(SUBSTRING(products.name_prod, 1, 1)) = LOWER(:firstLetter)', {
+				.where('products.show_prod = :show', { show: 1 })
+				.andWhere('LOWER(SUBSTRING(products.name_prod, 1, 1)) = LOWER(:firstLetter)', {
 					firstLetter: keyword.charAt(0),
 				})
 				.orderBy('products.createdAt', 'DESC')
@@ -353,7 +358,8 @@ export class ProductService {
 				.leftJoinAndSelect('products.brands', 'brands')
 				.leftJoinAndSelect('products.categories', 'categories')
 				.leftJoinAndSelect('products.color', 'color')
-				.where('products.id_category = :id', { id: id })
+				.where('products.show_prod = :show', { show: 1 })
+				.andWhere('products.id_category = :id', { id: id })
 				.orderBy('products.createdAt', 'DESC')
 				.getMany();
 			return result;
@@ -372,7 +378,8 @@ export class ProductService {
 				.leftJoinAndSelect('products.brands', 'brands')
 				.leftJoinAndSelect('products.categories', 'categories')
 				.leftJoinAndSelect('products.color', 'color')
-				.where('products.id_brand = :id', { id: id })
+				.where('products.show_prod = :show', { show: 1 })
+				.andWhere('products.id_brand = :id', { id: id })
 				.orderBy('products.createdAt', 'DESC')
 				.getMany();
 			return result;
@@ -391,7 +398,8 @@ export class ProductService {
 				.leftJoinAndSelect('products.brands', 'brands')
 				.leftJoinAndSelect('products.categories', 'categories')
 				.leftJoinAndSelect('products.color', 'color')
-				.where('products.price_prod <= :price', { price: price })
+				.where('products.show_prod = :show', { show: 1 })
+				.andWhere('products.price_prod <= :price', { price: price })
 				.orderBy('products.createdAt', 'DESC')
 				.getMany();
 			return result;
@@ -410,7 +418,8 @@ export class ProductService {
 				.leftJoinAndSelect('products.brands', 'brands')
 				.leftJoinAndSelect('products.categories', 'categories')
 				.leftJoinAndSelect('products.color', 'color')
-				.where('products.price_prod >= :min AND products.price_prod <= :max', { min: min, max: max })
+				.where('products.show_prod = :show', { show: 1 })
+				.andWhere('products.price_prod >= :min AND products.price_prod <= :max', { min: min, max: max })
 				.orderBy('products.createdAt', 'DESC')
 				.getMany();
 			return result;
