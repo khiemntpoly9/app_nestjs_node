@@ -54,6 +54,9 @@ export class Product {
 	@Column({ type: 'int', default: 1 })
 	quantity: number;
 
+	@Column({ type: 'tinyint', default: 1 })
+	show_prod: number;
+
 	@CreateDateColumn({
 		name: 'createdAt',
 		type: 'timestamp',

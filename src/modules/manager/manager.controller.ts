@@ -22,6 +22,23 @@ export class ManagerController {
 		}
 	}
 
+	// Lấy lịch sử theo user filter
+	@Roles(Role.QTV)
+	@UseGuards(JwtAuthGuard)
+	@Get('history-user-filter')
+	async getActionHistoryByUserFilter(
+		@Query('id') id: number,
+		@Query('action') action: string,
+		@Res() res: Response,
+	) {
+		try {
+			const data = await this.managerService.getActionHistoryByUserFilter(id, action);
+			return res.status(HttpStatus.OK).json(data);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	// Lấy lịch sử theo product
 	@Roles(Role.QTV)
 	@UseGuards(JwtAuthGuard)

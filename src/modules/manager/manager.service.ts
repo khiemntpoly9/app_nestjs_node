@@ -57,6 +57,20 @@ export class ManagerService {
 		}
 	}
 
+	// Lấy lịch sử hành động theo user có filter
+	async getActionHistoryByUserFilter(id_user: number, action: string): Promise<ActionHistory[]> {
+		try {
+			const actionHistory = await this.actionHistoryRepository
+				.createQueryBuilder('action_history')
+				.where('action_history.id_user = :id_user', { id_user: id_user })
+				.andWhere('action_history.action_type = :action', { action: action })
+				.getMany();
+			return actionHistory;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
 	// Lấy lịch sử hành động theo sản phẩm
 	async getActionHistoryByProduct(id_product: number): Promise<ActionHistory[]> {
 		try {
