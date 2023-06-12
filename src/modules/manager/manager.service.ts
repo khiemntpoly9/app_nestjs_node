@@ -47,12 +47,10 @@ export class ManagerService {
 	// Lấy lịch sử hành động theo user
 	async getActionHistoryByUser(id_user: number): Promise<ActionHistory[]> {
 		try {
-			const actionHistory = await this.actionHistoryRepository.find({
-				where: {
-					id_user: id_user,
-				},
-				relations: ['user'],
-			});
+			const actionHistory = await this.actionHistoryRepository
+				.createQueryBuilder('action_history')
+				.where('action_history.id_user = :id_user', { id_user: id_user })
+				.getMany();
 			return actionHistory;
 		} catch (error) {
 			throw new Error(error);
@@ -62,12 +60,10 @@ export class ManagerService {
 	// Lấy lịch sử hành động theo sản phẩm
 	async getActionHistoryByProduct(id_product: number): Promise<ActionHistory[]> {
 		try {
-			const actionHistory = await this.actionHistoryRepository.find({
-				where: {
-					id_product: id_product,
-				},
-				relations: ['user'],
-			});
+			const actionHistory = await this.actionHistoryRepository
+				.createQueryBuilder('action_history')
+				.where('action_history.id_product = :id_product', { id_product: id_product })
+				.getMany();
 			return actionHistory;
 		} catch (error) {
 			throw new Error(error);
