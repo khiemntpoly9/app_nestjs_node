@@ -51,7 +51,7 @@ export class Product {
 	@Column({ type: 'varchar', length: 255 })
 	public_id: string;
 
-	@Column({ type: 'int', default: 1 })
+	@Column({ type: 'int', nullable: false, default: 1 })
 	quantity: number;
 
 	@Column({ type: 'tinyint', default: 1 })

@@ -171,8 +171,6 @@ export class UserService {
 				.from(User)
 				.where('id_user = :id', { id })
 				.execute();
-			// Xoá data yêu thích
-			// Xoá data giỏ hàng
 		} catch (error) {
 			throw new Error(error);
 		}

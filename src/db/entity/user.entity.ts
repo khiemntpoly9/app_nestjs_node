@@ -53,7 +53,7 @@ export class User {
 	@JoinColumn({ name: 'id_role', referencedColumnName: 'id_role' })
 	role: Role;
 
-	@ManyToMany(() => Product, (product) => product.favorites)
+	@ManyToMany(() => Product, (product) => product.favorites, { onDelete: 'CASCADE' })
 	@JoinTable({
 		name: 'favorites',
 		joinColumn: { name: 'id_user', referencedColumnName: 'id_user' },

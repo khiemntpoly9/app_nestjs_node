@@ -55,7 +55,7 @@ export class AuthController {
 			const token = await this.authService.login(req.user);
 			return res
 				.status(HttpStatus.OK)
-				.cookie('access_token', token, { httpOnly: true })
+				.cookie('access_token', token, { httpOnly: true, sameSite: 'none', secure: true })
 				.json({ message: 'Đăng nhập thành công!' });
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -111,7 +111,7 @@ export class AuthController {
 			const token = await this.authService.googleLogin(req);
 			return res
 				.status(HttpStatus.OK)
-				.cookie('access_token', token, { httpOnly: true })
+				.cookie('access_token', token, { httpOnly: true, sameSite: 'none', secure: true })
 				.redirect('http://localhost:3000/api/user/admin');
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
