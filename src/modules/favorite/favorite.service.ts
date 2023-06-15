@@ -57,4 +57,15 @@ export class FavoriteService {
 		if (!favorite) throw new Error('Sản phẩm không tồn tại trong danh sách yêu thích!');
 		return await this.favoriteRepository.delete(favorite);
 	}
+
+	// Xoá tất cả yêu thích của người dùng
+	async deleteAllFavorite(id_user: number) {
+		const favorites = await this.favoriteRepository.find({
+			where: { id_user: id_user },
+		});
+		if (favorites.length === 0) throw new Error('Sản phẩm không tồn tại trong danh sách yêu thích!');
+		for (const favorite of favorites) {
+			await this.favoriteRepository.remove(favorite);
+		}
+	}
 }
