@@ -427,4 +427,59 @@ export class ProductService {
 			throw new Error(error);
 		}
 	}
+
+	// Lấy danh sách sản phẩm (admin)
+	async findAllProductAdmin(page: number, limit: number): Promise<Product[]> {
+		try {
+			const result = await this.productRepository
+				.createQueryBuilder('products')
+				.leftJoinAndSelect('products.categories', 'categories')
+				.leftJoinAndSelect('products.brands', 'brands')
+				.leftJoinAndSelect('products.img_prod', 'img_prod')
+				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
+				.leftJoinAndSelect('products.color', 'color')
+				.leftJoinAndSelect('products.user', 'user')
+				.leftJoinAndSelect('user.role', 'role')
+				// .where('products.show_prod = 1')
+				.select([
+					/* Product */
+					'products.id_product',
+					'products.name_prod',
+					'products.price_prod',
+					'products.quantity',
+					'products.show_prod',
+					'products.img_thumbnail',
+					'products.public_id',
+					'products.createdAt',
+					'products.updatedAt',
+					/* Categories */
+					'categories.id_categories',
+					'categories.name_categories',
+					/* Brand */
+					'brands.id_brand',
+					'brands.name_brand',
+					'user.id_user',
+					'user.first_name',
+					'user.last_name',
+					'role.name_role',
+
+					/* Images  */
+					// 'img_prod.id_images',
+					// 'img_prod.url',
+					// 'img_prod.public_id',
+					/* Detail Product */
+					// 'detail_prod.detail_prod',
+					/* Color */
+					// 'color.name_color',
+					// 'color.hex_color',
+				])
+				.orderBy('products.createdAt', 'DESC')
+				.skip((page - 1) * limit)
+				.take(limit)
+				.getMany();
+			return result;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
 }

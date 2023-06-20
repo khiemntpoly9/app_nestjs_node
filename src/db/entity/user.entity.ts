@@ -60,4 +60,7 @@ export class User {
 		inverseJoinColumn: { name: 'id_product', referencedColumnName: 'id_product' },
 	})
 	product: Product[];
+
+	@ManyToMany(() => Product, (product) => product.user)
+	product_act: Product[];
 }

@@ -13,7 +13,7 @@ export class Favorites {
 	@Column({ type: 'int', nullable: false })
 	id_product: number;
 
-	// many to many product
+	// many to one product
 	@ManyToOne(() => Product, (product) => product.favorites)
 	@JoinColumn({ name: 'id_product', referencedColumnName: 'id_product' })
 	product: Product;
