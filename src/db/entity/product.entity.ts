@@ -21,6 +21,7 @@ import { Color } from './color.entity';
 import { User } from './user.entity';
 import { Favorites } from './favotites.entity';
 import { OrderItem } from './order_item.entity';
+import { ActionHistory } from './action_history.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -106,4 +107,13 @@ export class Product {
 	// Cart
 	@OneToMany(() => OrderItem, (orderItem) => orderItem.product)
 	orderItems: OrderItem[];
+
+	//
+	@ManyToMany(() => User, (user) => user.product_act)
+	@JoinTable({
+		name: 'action_history',
+		joinColumn: { name: 'id_product', referencedColumnName: 'id_product' },
+		inverseJoinColumn: { name: 'id_user', referencedColumnName: 'id_user' },
+	})
+	user: User[];
 }

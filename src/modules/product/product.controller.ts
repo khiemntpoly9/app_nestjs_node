@@ -283,4 +283,17 @@ export class ProductController {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	// Lấy sản phẩm ở danh sách sản phẩm admin
+	@Roles(Role.QTV, Role.CTV)
+	@UseGuards(JwtAuthGuard)
+	@Get('products-admin')
+	async getAllProductAdmin(@Query('page') page: number, @Query('limit') limit: number, @Res() res: Response) {
+		try {
+			const data = await this.productService.findAllProductAdmin(page, limit);
+			return res.status(HttpStatus.OK).json(data);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
