@@ -11,6 +11,7 @@ import {
 	Patch,
 	Query,
 	Delete,
+	Req,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { categoryDto } from './dto/categories.dto';
@@ -18,10 +19,22 @@ import { Response } from 'express';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ManagerService } from '../manager/manager.service';
+
+interface User extends Request {
+	user: {
+		userId: number;
+		email: string;
+		role: string;
+	};
+}
 
 @Controller('categories')
 export class CategoriesController {
-	constructor(private categoriesService: CategoriesService) {}
+	constructor(
+		private categoriesService: CategoriesService,
+		private readonly managerService: ManagerService,
+	) {}
 
 	// Lấy tất cả danh mục
 	@Get()
@@ -38,9 +51,17 @@ export class CategoriesController {
 	@Roles(Role.QTV, Role.CTV)
 	@UseGuards(JwtAuthGuard)
 	@Post()
-	async createCategory(@Body() categoryDto: categoryDto, @Res() res: Response) {
+	async createCategory(@Body() categoryDto: categoryDto, @Req() req: User, @Res() res: Response) {
 		try {
 			const createCategory = await this.categoriesService.createCategories(categoryDto);
+			// Log action
+			await this.managerService.createActionHistory(
+				req.user.userId,
+				'create',
+				'category',
+				createCategory.id_categories,
+				`Tạo danh mục ${createCategory.name_categories}`,
+			);
 			return res.status(HttpStatus.OK).json({ message: 'Tạo danh mục thành công!' });
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -51,9 +72,22 @@ export class CategoriesController {
 	@Roles(Role.QTV, Role.CTV)
 	@UseGuards(JwtAuthGuard)
 	@Patch()
-	async updateCategory(@Query('id') id: number, @Body() categoryDto: categoryDto, @Res() res: Response) {
+	async updateCategory(
+		@Query('id') id: number,
+		@Body() categoryDto: categoryDto,
+		@Req() req: User,
+		@Res() res: Response,
+	) {
 		try {
 			const updateCategory = await this.categoriesService.updateCategories(id, categoryDto);
+			// Log action
+			await this.managerService.createActionHistory(
+				req.user.userId,
+				'update',
+				'category',
+				id,
+				`Sửa danh mục ${updateCategory.name_categories}`,
+			);
 			return res.status(HttpStatus.OK).json({ message: 'Cập nhật danh mục thành công!' });
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -64,9 +98,22 @@ export class CategoriesController {
 	@Roles(Role.QTV, Role.CTV)
 	@UseGuards(JwtAuthGuard)
 	@Delete()
-	async deleteCategory(@Query('id') id: number, @Res() res: Response) {
+	async deleteCategory(
+		@Query('id') id: number,
+		@Query('name') name: string,
+		@Req() req: User,
+		@Res() res: Response,
+	) {
 		try {
 			const deleteCategory = await this.categoriesService.deleteCategories(id);
+			// Log action
+			await this.managerService.createActionHistory(
+				req.user.userId,
+				'delete',
+				'category',
+				id,
+				`Xoá danh mục ${name}`,
+			);
 			return res.status(HttpStatus.OK).json({ message: 'Xoá danh mục thành công!' });
 		} catch (error) {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);

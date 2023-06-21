@@ -6,6 +6,10 @@ export enum ActionType {
 	'DELETE' = 'delete',
 }
 
+export enum Type {
+	'PRODUCT' = 'product',
+	'CATEGORY' = 'category',
+}
 @Entity({ name: 'action_history' })
 export class ActionHistory {
 	@PrimaryGeneratedColumn({ type: 'bigint' })
@@ -17,11 +21,14 @@ export class ActionHistory {
 	@Column({ type: 'enum', enum: ActionType, default: ActionType.CREATE, nullable: false })
 	action_type: ActionType;
 
-	@Column({ type: 'text', nullable: false })
-	content: string;
+	@Column({ type: 'enum', enum: Type, default: null, nullable: false })
+	type: Type;
 
 	@Column({ type: 'int', nullable: false })
-	id_product: number;
+	id: number;
+
+	@Column({ type: 'text', nullable: false })
+	content: string;
 
 	@CreateDateColumn({ type: 'timestamp', nullable: false })
 	action_date: Date;

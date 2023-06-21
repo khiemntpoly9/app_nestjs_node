@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { Role } from './role.entity';
 import { Product } from './product.entity';
+import { Category } from './categories.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -63,4 +64,7 @@ export class User {
 
 	@ManyToMany(() => Product, (product) => product.user)
 	product_act: Product[];
+
+	@ManyToMany(() => Category, (category) => category.user)
+	categories: Category[];
 }

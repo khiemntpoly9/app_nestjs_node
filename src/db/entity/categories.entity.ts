@@ -9,8 +9,11 @@ import {
 	// ManyToMany,
 	ManyToOne,
 	JoinColumn,
+	ManyToMany,
+	JoinTable,
 } from 'typeorm';
 import { Product } from './product.entity';
+import { User } from './user.entity';
 
 @Entity({ name: 'categories' })
 export class Category {
@@ -38,4 +41,12 @@ export class Category {
 	@ManyToOne(() => Category, (category) => category.children)
 	@JoinColumn({ name: 'parent_id' })
 	parent: Category;
+
+	@ManyToMany(() => User, (user) => user.categories)
+	@JoinTable({
+		name: 'action_history',
+		joinColumn: { name: 'id', referencedColumnName: 'id_categories' },
+		inverseJoinColumn: { name: 'id_user', referencedColumnName: 'id_user' },
+	})
+	user: User[];
 }

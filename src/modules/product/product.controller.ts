@@ -91,8 +91,9 @@ export class ProductController {
 			const log = await this.managerService.createActionHistory(
 				req.user.userId,
 				'create',
-				`Thêm sản phẩm #${newProductId} ${productDto.name_prod}`,
+				'product',
 				newProductId,
+				`Thêm sản phẩm #${newProductId} ${productDto.name_prod}`,
 			);
 			// final
 			return res.status(HttpStatus.OK).json({ message: 'Tạo sản phẩm thành công!' });
@@ -187,8 +188,9 @@ export class ProductController {
 			const log = await this.managerService.createActionHistory(
 				req.user.userId,
 				'update',
-				`Sửa sản phẩm #${id} ${prodDetail.name_prod}`,
+				'product',
 				id,
+				`Sửa sản phẩm #${id} ${prodDetail.name_prod}`,
 			);
 			return res.status(HttpStatus.OK).json({ message: 'Cập nhật sản phẩm thành công!' });
 		} catch (error) {
@@ -200,15 +202,21 @@ export class ProductController {
 	@Roles(Role.QTV, Role.CTV)
 	@UseGuards(JwtAuthGuard)
 	@Delete('product')
-	async deleteProduct(@Query('id') id: number, @Res() res: Response, @Req() req: User) {
+	async deleteProduct(
+		@Query('id') id: number,
+		@Query('name') name: string,
+		@Res() res: Response,
+		@Req() req: User,
+	) {
 		try {
 			const deleteProd = await this.productService.deleteProduct(id);
 			// Ghi lịch sử hành động
 			const log = await this.managerService.createActionHistory(
 				req.user.userId,
 				'delete',
-				`Xoá sản phẩm #${id}`,
+				'product',
 				id,
+				`Xoá sản phẩm ${name}`,
 			);
 			return res.status(HttpStatus.OK).json({ message: 'Xoá sản phẩm thành công!' });
 		} catch (error) {

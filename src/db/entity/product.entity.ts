@@ -112,7 +112,7 @@ export class Product {
 	@ManyToMany(() => User, (user) => user.product_act)
 	@JoinTable({
 		name: 'action_history',
-		joinColumn: { name: 'id_product', referencedColumnName: 'id_product' },
+		joinColumn: { name: 'id', referencedColumnName: 'id_product' },
 		inverseJoinColumn: { name: 'id_user', referencedColumnName: 'id_user' },
 	})
 	user: User[];
