@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ActionHistory } from 'src/db/entity/action_history.entity';
+import { ActionHistory, Type } from 'src/db/entity/action_history.entity';
 import { Repository } from 'typeorm';
 import { ActionType } from 'src/db/entity/action_history.entity';
 
@@ -15,8 +15,9 @@ export class ManagerService {
 	async createActionHistory(
 		id_user: number,
 		action_type: string,
+		type: string,
+		id: number,
 		content: string,
-		id_product: number,
 	): Promise<ActionHistory> {
 		try {
 			// Lấy hành động
@@ -32,11 +33,23 @@ export class ManagerService {
 						return ActionType.CREATE;
 				}
 			}
+			// Lấy loại
+			function getType(type: string): Type {
+				switch (type) {
+					case 'product':
+						return Type.PRODUCT;
+					case 'category':
+						return Type.CATEGORY;
+					default:
+						return null;
+				}
+			}
 			const actionHistory = new ActionHistory();
 			actionHistory.id_user = id_user;
 			actionHistory.action_type = getActionType(action_type);
+			actionHistory.type = getType(type);
+			actionHistory.id = id;
 			actionHistory.content = content || 'Không có nội dung';
-			actionHistory.id_product = id_product;
 			const saveActionHistory = await this.actionHistoryRepository.save(actionHistory);
 			return saveActionHistory;
 		} catch (error) {
@@ -76,7 +89,8 @@ export class ManagerService {
 		try {
 			const actionHistory = await this.actionHistoryRepository
 				.createQueryBuilder('action_history')
-				.where('action_history.id_product = :id_product', { id_product: id_product })
+				.where('action_history.type = :type', { type: Type.PRODUCT })
+				.andWhere('action_history.id = :id_product', { id_product: id_product })
 				.getMany();
 			return actionHistory;
 		} catch (error) {

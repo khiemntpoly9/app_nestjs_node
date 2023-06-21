@@ -80,6 +80,9 @@ export class CategoriesService {
 		try {
 			const categories = await this.categoryRepository
 				.createQueryBuilder('categories')
+				.leftJoinAndSelect('categories.user', 'user')
+				.leftJoinAndSelect('user.role', 'role')
+				.select(['categories', 'user.id_user', 'user.first_name', 'user.last_name', 'role.name_role'])
 				.where('categories.parent_id IS NULL')
 				.orderBy('categories.id_categories', 'DESC')
 				.getMany();
@@ -94,10 +97,20 @@ export class CategoriesService {
 		try {
 			const categories = await this.categoryRepository
 				.createQueryBuilder('categories')
+				.leftJoinAndSelect('categories.parent', 'parent')
+				.leftJoinAndSelect('categories.user', 'user')
+				.leftJoinAndSelect('user.role', 'role')
+				.select([
+					'categories',
+					'parent.id_categories',
+					'parent.name_categories',
+					'user.id_user',
+					'user.first_name',
+					'user.last_name',
+					'role.name_role',
+				])
 				.where('categories.parent_id IS NOT NULL')
 				.orderBy('categories.id_categories', 'DESC')
-				.leftJoinAndSelect('categories.parent', 'parent')
-				.select(['categories', 'parent.id_categories', 'parent.name_categories'])
 				.getMany();
 			return categories;
 		} catch (error) {
