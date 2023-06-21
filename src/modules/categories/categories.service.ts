@@ -74,4 +74,34 @@ export class CategoriesService {
 			throw new Error(error);
 		}
 	}
+
+	// Lấy tất cả danh mục cha
+	async getAllParentCategories(): Promise<Category[]> {
+		try {
+			const categories = await this.categoryRepository
+				.createQueryBuilder('categories')
+				.where('categories.parent_id IS NULL')
+				.orderBy('categories.id_categories', 'DESC')
+				.getMany();
+			return categories;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy tất cả danh mục con
+	async getAllChildCategories(): Promise<Category[]> {
+		try {
+			const categories = await this.categoryRepository
+				.createQueryBuilder('categories')
+				.where('categories.parent_id IS NOT NULL')
+				.orderBy('categories.id_categories', 'DESC')
+				.leftJoinAndSelect('categories.parent', 'parent')
+				.select(['categories', 'parent.id_categories', 'parent.name_categories'])
+				.getMany();
+			return categories;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
 }
