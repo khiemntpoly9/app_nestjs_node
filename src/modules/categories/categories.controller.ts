@@ -72,4 +72,26 @@ export class CategoriesController {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	// Lấy tất cả danh mục cha
+	@Get('parent')
+	async getAllParentCategories(@Res() res: Response) {
+		try {
+			const data = await this.categoriesService.getAllParentCategories();
+			return res.status(HttpStatus.OK).json(data);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Lấy tất cả danh mục con
+	@Get('children')
+	async getAllChildrenCategories(@Res() res: Response) {
+		try {
+			const data = await this.categoriesService.getAllChildCategories();
+			return res.status(HttpStatus.OK).json(data);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

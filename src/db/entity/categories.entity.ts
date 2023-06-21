@@ -6,7 +6,8 @@ import {
 	CreateDateColumn,
 	UpdateDateColumn,
 	OneToMany,
-	ManyToMany,
+	// ManyToMany,
+	ManyToOne,
 	JoinColumn,
 } from 'typeorm';
 import { Product } from './product.entity';
@@ -34,7 +35,7 @@ export class Category {
 	@OneToMany(() => Category, (category) => category.parent)
 	children: Category[];
 
-	@ManyToMany(() => Category, (category) => category.children)
+	@ManyToOne(() => Category, (category) => category.children)
 	@JoinColumn({ name: 'parent_id' })
 	parent: Category;
 }
