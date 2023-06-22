@@ -58,7 +58,7 @@ export class CategoriesController {
 			await this.managerService.createActionHistory(
 				req.user.userId,
 				'create',
-				'category',
+				null,
 				createCategory.id_categories,
 				`Tạo danh mục ${createCategory.name_categories}`,
 			);
@@ -84,7 +84,7 @@ export class CategoriesController {
 			await this.managerService.createActionHistory(
 				req.user.userId,
 				'update',
-				'category',
+				null,
 				id,
 				`Sửa danh mục ${updateCategory.name_categories}`,
 			);
@@ -110,7 +110,7 @@ export class CategoriesController {
 			await this.managerService.createActionHistory(
 				req.user.userId,
 				'delete',
-				'category',
+				null,
 				id,
 				`Xoá danh mục ${name}`,
 			);

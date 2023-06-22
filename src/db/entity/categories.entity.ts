@@ -6,14 +6,11 @@ import {
 	CreateDateColumn,
 	UpdateDateColumn,
 	OneToMany,
-	// ManyToMany,
 	ManyToOne,
 	JoinColumn,
-	ManyToMany,
-	JoinTable,
 } from 'typeorm';
 import { Product } from './product.entity';
-import { User } from './user.entity';
+import { ActionHistory } from './action_history.entity';
 
 @Entity({ name: 'categories' })
 export class Category {
@@ -42,11 +39,7 @@ export class Category {
 	@JoinColumn({ name: 'parent_id' })
 	parent: Category;
 
-	@ManyToMany(() => User, (user) => user.categories)
-	@JoinTable({
-		name: 'action_history',
-		joinColumn: { name: 'id', referencedColumnName: 'id_categories' },
-		inverseJoinColumn: { name: 'id_user', referencedColumnName: 'id_user' },
-	})
-	user: User[];
+	// Mối quan hệ với bảng action_history
+	@OneToMany(() => ActionHistory, (action_history) => action_history.categories)
+	action_history: ActionHistory[];
 }

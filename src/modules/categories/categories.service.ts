@@ -80,11 +80,20 @@ export class CategoriesService {
 		try {
 			const categories = await this.categoryRepository
 				.createQueryBuilder('categories')
-				.leftJoinAndSelect('categories.user', 'user')
-				.leftJoinAndSelect('user.role', 'role')
-				.select(['categories', 'user.id_user', 'user.first_name', 'user.last_name', 'role.name_role'])
+				.leftJoinAndSelect('categories.action_history', 'action_history')
+				.leftJoinAndSelect('action_history.users', 'users')
+				.leftJoinAndSelect('users.role', 'role')
 				.where('categories.parent_id IS NULL')
-				.orderBy('categories.id_categories', 'DESC')
+				.andWhere('action_history.action_type = :action', { action: 'create' })
+				.select([
+					'categories',
+					'action_history.action_type',
+					'users.id_user',
+					'users.first_name',
+					'users.last_name',
+					'role.name_role',
+				])
+				.orderBy('categories.createdAt', 'DESC')
 				.getMany();
 			return categories;
 		} catch (error) {
@@ -98,19 +107,22 @@ export class CategoriesService {
 			const categories = await this.categoryRepository
 				.createQueryBuilder('categories')
 				.leftJoinAndSelect('categories.parent', 'parent')
-				.leftJoinAndSelect('categories.user', 'user')
-				.leftJoinAndSelect('user.role', 'role')
+				.leftJoinAndSelect('categories.action_history', 'action_history')
+				.leftJoinAndSelect('action_history.users', 'users')
+				.leftJoinAndSelect('users.role', 'role')
+				.where('categories.parent_id IS NOT NULL')
+				.andWhere('action_history.action_type = :action', { action: 'create' })
 				.select([
 					'categories',
 					'parent.id_categories',
 					'parent.name_categories',
-					'user.id_user',
-					'user.first_name',
-					'user.last_name',
+					'action_history.action_type',
+					'users.id_user',
+					'users.first_name',
+					'users.last_name',
 					'role.name_role',
 				])
-				.where('categories.parent_id IS NOT NULL')
-				.orderBy('categories.id_categories', 'DESC')
+				.orderBy('categories.createdAt', 'DESC')
 				.getMany();
 			return categories;
 		} catch (error) {

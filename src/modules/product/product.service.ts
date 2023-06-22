@@ -438,9 +438,10 @@ export class ProductService {
 				.leftJoinAndSelect('products.img_prod', 'img_prod')
 				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
 				.leftJoinAndSelect('products.color', 'color')
-				.leftJoinAndSelect('products.user', 'user')
-				.leftJoinAndSelect('user.role', 'role')
-				// .where('products.show_prod = 1')
+				.leftJoinAndSelect('products.action_history', 'action_history')
+				.leftJoinAndSelect('action_history.users', 'users')
+				.leftJoinAndSelect('users.role', 'role')
+				.where('action_history.action_type = :action', { action: 'create' })
 				.select([
 					/* Product */
 					'products.id_product',
@@ -458,9 +459,10 @@ export class ProductService {
 					/* Brand */
 					'brands.id_brand',
 					'brands.name_brand',
-					'user.id_user',
-					'user.first_name',
-					'user.last_name',
+					'action_history.action_type',
+					'users.id_user',
+					'users.first_name',
+					'users.last_name',
 					'role.name_role',
 
 					/* Images  */
