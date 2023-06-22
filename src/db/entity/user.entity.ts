@@ -10,10 +10,12 @@ import {
 	ManyToOne,
 	ManyToMany,
 	JoinTable,
+	OneToMany,
 } from 'typeorm';
 import { Role } from './role.entity';
 import { Product } from './product.entity';
 import { Category } from './categories.entity';
+import { ActionHistory } from './action_history.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -62,9 +64,7 @@ export class User {
 	})
 	product: Product[];
 
-	@ManyToMany(() => Product, (product) => product.user)
-	product_act: Product[];
-
-	@ManyToMany(() => Category, (category) => category.user)
-	categories: Category[];
+	// Mối quan hệ với bảng action_history
+	@OneToMany(() => ActionHistory, (actionh) => actionh.users)
+	actionh: ActionHistory[];
 }

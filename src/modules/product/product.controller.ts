@@ -91,8 +91,8 @@ export class ProductController {
 			const log = await this.managerService.createActionHistory(
 				req.user.userId,
 				'create',
-				'product',
 				newProductId,
+				null,
 				`Thêm sản phẩm #${newProductId} ${productDto.name_prod}`,
 			);
 			// final
@@ -188,8 +188,8 @@ export class ProductController {
 			const log = await this.managerService.createActionHistory(
 				req.user.userId,
 				'update',
-				'product',
 				id,
+				null,
 				`Sửa sản phẩm #${id} ${prodDetail.name_prod}`,
 			);
 			return res.status(HttpStatus.OK).json({ message: 'Cập nhật sản phẩm thành công!' });
@@ -214,8 +214,8 @@ export class ProductController {
 			const log = await this.managerService.createActionHistory(
 				req.user.userId,
 				'delete',
-				'product',
 				id,
+				null,
 				`Xoá sản phẩm ${name}`,
 			);
 			return res.status(HttpStatus.OK).json({ message: 'Xoá sản phẩm thành công!' });

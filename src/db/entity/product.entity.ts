@@ -108,12 +108,7 @@ export class Product {
 	@OneToMany(() => OrderItem, (orderItem) => orderItem.product)
 	orderItems: OrderItem[];
 
-	//
-	@ManyToMany(() => User, (user) => user.product_act)
-	@JoinTable({
-		name: 'action_history',
-		joinColumn: { name: 'id', referencedColumnName: 'id_product' },
-		inverseJoinColumn: { name: 'id_user', referencedColumnName: 'id_user' },
-	})
-	user: User[];
+	// Mối quan hệ với bảng action_history
+	@OneToMany(() => ActionHistory, (action_history) => action_history.products)
+	action_history: ActionHistory[];
 }
