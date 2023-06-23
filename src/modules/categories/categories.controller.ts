@@ -141,4 +141,15 @@ export class CategoriesController {
 			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	// Lấy danh mục con theo id parent
+	@Get('children/p')
+	async getChildrenCategoriesByIdParent(@Res() res: Response, @Query('id') id: number) {
+		try {
+			const data = await this.categoriesService.getChildCategories(id);
+			return res.status(HttpStatus.OK).json(data);
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
