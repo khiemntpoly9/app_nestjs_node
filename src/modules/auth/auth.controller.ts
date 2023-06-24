@@ -22,11 +22,13 @@ import * as moment from 'moment-timezone';
 import { UserService } from '../user/user.service';
 import { MailService } from '../mail/mail.service';
 import * as bcrypt from 'bcrypt';
+import { Roles } from './roles.decorator';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Role } from '../auth/role.enum';
 
 interface User extends Request {
 	user: { email: string; firstName: string; lastName: string; accessToken: string; refreshToken: string };
 }
-
 @Controller('auth')
 export class AuthController {
 	constructor(
@@ -77,6 +79,23 @@ export class AuthController {
 		}
 	}
 	*/
+
+	// Check đăng nhập, role
+	@Get('check')
+	async checkAuth(@Req() req: Request, @Res() res: Response) {
+		try {
+			const token = req.cookies['access_token'];
+			if (!token) {
+				return res.status(HttpStatus.UNAUTHORIZED).json({ isLogin: false });
+			}
+			const payload = await this.jwtService.verifyAsync(token, {
+				secret: jwtConstants.secret,
+			});
+			return res.status(HttpStatus.OK).json({ isLogin: true, role: payload.role });
+		} catch (error) {
+			throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	// Đăng xuất
 	@Post('logout')

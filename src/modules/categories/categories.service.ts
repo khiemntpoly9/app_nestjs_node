@@ -129,4 +129,18 @@ export class CategoriesService {
 			throw new Error(error);
 		}
 	}
+
+	// Lấy danh mục con theo danh mục chính
+	async getChildCategories(id: number): Promise<Category[]> {
+		try {
+			const categories = await this.categoryRepository
+				.createQueryBuilder('categories')
+				// .leftJoinAndSelect('categories.parent', 'parent')
+				.where('categories.parent_id = :id', { id })
+				.getMany();
+			return categories;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
 }
