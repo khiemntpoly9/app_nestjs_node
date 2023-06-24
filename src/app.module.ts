@@ -46,6 +46,7 @@ export class AppModule implements NestModule {
 			.apply(LoggerMiddleware)
 			.exclude(
 				{ path: 'auth/login', method: RequestMethod.POST },
+				{ path: 'auth/check', method: RequestMethod.GET },
 				{ path: 'auth/logout', method: RequestMethod.POST },
 				{ path: 'auth/register', method: RequestMethod.POST },
 				{ path: 'auth/google/redirect', method: RequestMethod.GET },
