@@ -86,7 +86,7 @@ export class AuthController {
 		try {
 			const token = req.cookies['access_token'];
 			if (!token) {
-				return res.status(HttpStatus.UNAUTHORIZED).json({ isLogin: false });
+				return res.status(HttpStatus.OK).json({ isLogin: false });
 			}
 			const payload = await this.jwtService.verifyAsync(token, {
 				secret: jwtConstants.secret,
