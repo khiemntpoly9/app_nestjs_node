@@ -188,6 +188,8 @@ export class ProductService {
 					'products.public_id',
 					'products.createdAt',
 					'products.updatedAt',
+					'products.quantity',
+					'products.show_prod',
 					/* Categories */
 					'categories.id_categories',
 					'categories.name_categories',
