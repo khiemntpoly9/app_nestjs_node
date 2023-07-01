@@ -175,6 +175,7 @@ export class ProductService {
 			const result = await this.productRepository
 				.createQueryBuilder('products')
 				.leftJoinAndSelect('products.categories', 'categories')
+				.leftJoinAndSelect('categories.parent', 'parent')
 				.leftJoinAndSelect('products.brands', 'brands')
 				.leftJoinAndSelect('products.img_prod', 'img_prod')
 				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
@@ -193,6 +194,8 @@ export class ProductService {
 					/* Categories */
 					'categories.id_categories',
 					'categories.name_categories',
+					'parent.id_categories',
+					'parent.name_categories',
 					/* Brand */
 					'brands.id_brand',
 					'brands.name_brand',
@@ -423,6 +426,63 @@ export class ProductService {
 				.where('products.show_prod = :show', { show: 1 })
 				.andWhere('products.price_prod >= :min AND products.price_prod <= :max', { min: min, max: max })
 				.orderBy('products.createdAt', 'DESC')
+				.getMany();
+			return result;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy danh sách sản phẩm (admin)
+	async findAllProductAdmin(page: number, limit: number): Promise<Product[]> {
+		try {
+			const result = await this.productRepository
+				.createQueryBuilder('products')
+				.leftJoinAndSelect('products.categories', 'categories')
+				.leftJoinAndSelect('products.brands', 'brands')
+				.leftJoinAndSelect('products.img_prod', 'img_prod')
+				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
+				.leftJoinAndSelect('products.color', 'color')
+				.leftJoinAndSelect('products.action_history', 'action_history')
+				.leftJoinAndSelect('action_history.users', 'users')
+				.leftJoinAndSelect('users.role', 'role')
+				.where('action_history.action_type = :action', { action: 'create' })
+				.select([
+					/* Product */
+					'products.id_product',
+					'products.name_prod',
+					'products.price_prod',
+					'products.quantity',
+					'products.show_prod',
+					'products.img_thumbnail',
+					'products.public_id',
+					'products.createdAt',
+					'products.updatedAt',
+					/* Categories */
+					'categories.id_categories',
+					'categories.name_categories',
+					/* Brand */
+					'brands.id_brand',
+					'brands.name_brand',
+					'action_history.action_type',
+					'users.id_user',
+					'users.first_name',
+					'users.last_name',
+					'role.name_role',
+
+					/* Images  */
+					// 'img_prod.id_images',
+					// 'img_prod.url',
+					// 'img_prod.public_id',
+					/* Detail Product */
+					// 'detail_prod.detail_prod',
+					/* Color */
+					// 'color.name_color',
+					// 'color.hex_color',
+				])
+				.orderBy('products.createdAt', 'DESC')
+				.skip((page - 1) * limit)
+				.take(limit)
 				.getMany();
 			return result;
 		} catch (error) {

@@ -10,9 +10,12 @@ import {
 	ManyToOne,
 	ManyToMany,
 	JoinTable,
+	OneToMany,
 } from 'typeorm';
 import { Role } from './role.entity';
 import { Product } from './product.entity';
+import { Category } from './categories.entity';
+import { ActionHistory } from './action_history.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -53,11 +56,15 @@ export class User {
 	@JoinColumn({ name: 'id_role', referencedColumnName: 'id_role' })
 	role: Role;
 
-	@ManyToMany(() => Product, (product) => product.favorites)
+	@ManyToMany(() => Product, (product) => product.favorites, { onDelete: 'CASCADE' })
 	@JoinTable({
 		name: 'favorites',
 		joinColumn: { name: 'id_user', referencedColumnName: 'id_user' },
 		inverseJoinColumn: { name: 'id_product', referencedColumnName: 'id_product' },
 	})
 	product: Product[];
+
+	// Mối quan hệ với bảng action_history
+	@OneToMany(() => ActionHistory, (actionh) => actionh.users)
+	actionh: ActionHistory[];
 }

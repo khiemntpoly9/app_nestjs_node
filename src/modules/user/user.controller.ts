@@ -19,6 +19,7 @@ import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { userDto } from './dto/user.dto';
+import { FavoriteService } from '../favorite/favorite.service';
 
 interface User extends Request {
 	user: {

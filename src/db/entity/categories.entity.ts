@@ -6,10 +6,11 @@ import {
 	CreateDateColumn,
 	UpdateDateColumn,
 	OneToMany,
-	ManyToMany,
+	ManyToOne,
 	JoinColumn,
 } from 'typeorm';
 import { Product } from './product.entity';
+import { ActionHistory } from './action_history.entity';
 
 @Entity({ name: 'categories' })
 export class Category {
@@ -34,7 +35,11 @@ export class Category {
 	@OneToMany(() => Category, (category) => category.parent)
 	children: Category[];
 
-	@ManyToMany(() => Category, (category) => category.children)
+	@ManyToOne(() => Category, (category) => category.children)
 	@JoinColumn({ name: 'parent_id' })
 	parent: Category;
+
+	// Mối quan hệ với bảng action_history
+	@OneToMany(() => ActionHistory, (action_history) => action_history.categories)
+	action_history: ActionHistory[];
 }

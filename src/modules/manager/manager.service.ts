@@ -15,8 +15,9 @@ export class ManagerService {
 	async createActionHistory(
 		id_user: number,
 		action_type: string,
-		content: string,
 		id_product: number,
+		id_categories: number,
+		content: string,
 	): Promise<ActionHistory> {
 		try {
 			// Lấy hành động
@@ -35,8 +36,9 @@ export class ManagerService {
 			const actionHistory = new ActionHistory();
 			actionHistory.id_user = id_user;
 			actionHistory.action_type = getActionType(action_type);
-			actionHistory.content = content || 'Không có nội dung';
 			actionHistory.id_product = id_product;
+			actionHistory.id_categories = id_categories;
+			actionHistory.content = content || 'Không có nội dung';
 			const saveActionHistory = await this.actionHistoryRepository.save(actionHistory);
 			return saveActionHistory;
 		} catch (error) {

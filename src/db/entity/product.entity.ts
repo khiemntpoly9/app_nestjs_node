@@ -21,6 +21,7 @@ import { Color } from './color.entity';
 import { User } from './user.entity';
 import { Favorites } from './favotites.entity';
 import { OrderItem } from './order_item.entity';
+import { ActionHistory } from './action_history.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -51,7 +52,7 @@ export class Product {
 	@Column({ type: 'varchar', length: 255 })
 	public_id: string;
 
-	@Column({ type: 'int', default: 1 })
+	@Column({ type: 'int', nullable: false, default: 1 })
 	quantity: number;
 
 	@Column({ type: 'tinyint', default: 1 })
@@ -106,4 +107,8 @@ export class Product {
 	// Cart
 	@OneToMany(() => OrderItem, (orderItem) => orderItem.product)
 	orderItems: OrderItem[];
+
+	// Mối quan hệ với bảng action_history
+	@OneToMany(() => ActionHistory, (action_history) => action_history.products)
+	action_history: ActionHistory[];
 }

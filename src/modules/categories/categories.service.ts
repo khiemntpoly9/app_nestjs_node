@@ -74,4 +74,73 @@ export class CategoriesService {
 			throw new Error(error);
 		}
 	}
+
+	// Lấy tất cả danh mục cha
+	async getAllParentCategories(): Promise<Category[]> {
+		try {
+			const categories = await this.categoryRepository
+				.createQueryBuilder('categories')
+				.leftJoinAndSelect('categories.action_history', 'action_history')
+				.leftJoinAndSelect('action_history.users', 'users')
+				.leftJoinAndSelect('users.role', 'role')
+				.where('categories.parent_id IS NULL')
+				.andWhere('action_history.action_type = :action', { action: 'create' })
+				.select([
+					'categories',
+					'action_history.action_type',
+					'users.id_user',
+					'users.first_name',
+					'users.last_name',
+					'role.name_role',
+				])
+				.orderBy('categories.createdAt', 'DESC')
+				.getMany();
+			return categories;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy tất cả danh mục con
+	async getAllChildCategories(): Promise<Category[]> {
+		try {
+			const categories = await this.categoryRepository
+				.createQueryBuilder('categories')
+				.leftJoinAndSelect('categories.parent', 'parent')
+				.leftJoinAndSelect('categories.action_history', 'action_history')
+				.leftJoinAndSelect('action_history.users', 'users')
+				.leftJoinAndSelect('users.role', 'role')
+				.where('categories.parent_id IS NOT NULL')
+				.andWhere('action_history.action_type = :action', { action: 'create' })
+				.select([
+					'categories',
+					'parent.id_categories',
+					'parent.name_categories',
+					'action_history.action_type',
+					'users.id_user',
+					'users.first_name',
+					'users.last_name',
+					'role.name_role',
+				])
+				.orderBy('categories.createdAt', 'DESC')
+				.getMany();
+			return categories;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	// Lấy danh mục con theo danh mục chính
+	async getChildCategories(id: number): Promise<Category[]> {
+		try {
+			const categories = await this.categoryRepository
+				.createQueryBuilder('categories')
+				// .leftJoinAndSelect('categories.parent', 'parent')
+				.where('categories.parent_id = :id', { id })
+				.getMany();
+			return categories;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
 }

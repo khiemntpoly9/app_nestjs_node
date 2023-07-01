@@ -171,8 +171,6 @@ export class UserService {
 				.from(User)
 				.where('id_user = :id', { id })
 				.execute();
-			// Xoá data yêu thích
-			// Xoá data giỏ hàng
 		} catch (error) {
 			throw new Error(error);
 		}
@@ -215,12 +213,15 @@ export class UserService {
 		try {
 			const listUser = await this.userRepository
 				.createQueryBuilder('users')
+				.leftJoinAndSelect('users.role', 'role')
 				.select([
 					'users.id_user',
 					'users.first_name',
 					'users.last_name',
 					'users.email',
 					'users.phone',
+					'users.verify',
+					'role.name_role',
 					'users.createdAt',
 				])
 				.getMany();
