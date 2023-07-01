@@ -175,6 +175,7 @@ export class ProductService {
 			const result = await this.productRepository
 				.createQueryBuilder('products')
 				.leftJoinAndSelect('products.categories', 'categories')
+				.leftJoinAndSelect('categories.parent', 'parent')
 				.leftJoinAndSelect('products.brands', 'brands')
 				.leftJoinAndSelect('products.img_prod', 'img_prod')
 				.leftJoinAndSelect('products.detail_prod', 'detail_prod')
@@ -191,6 +192,8 @@ export class ProductService {
 					/* Categories */
 					'categories.id_categories',
 					'categories.name_categories',
+					'parent.id_categories',
+					'parent.name_categories',
 					/* Brand */
 					'brands.id_brand',
 					'brands.name_brand',
