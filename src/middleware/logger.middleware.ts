@@ -15,7 +15,7 @@ export class LoggerMiddleware implements NestMiddleware {
 				secret: jwtConstants.secret,
 			});
 			// Check Verify
-			if (payload.verify == false) throw new UnauthorizedException('Bạn cần xác minh tài khoản!');
+			if (payload.verify_at == false) throw new UnauthorizedException('Bạn cần xác minh tài khoản!');
 			// payload.userId
 			const tokenUser = await this.userService.getTokenUser(payload.userId);
 			if (tokenUser == null) throw new UnauthorizedException('Bạn cần đăng nhập lại!');

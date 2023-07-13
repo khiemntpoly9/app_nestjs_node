@@ -79,7 +79,7 @@ export class UserService {
 				email: user.email,
 				phone: null,
 				password: null,
-				verify: 1,
+				verify_at: 1,
 			})
 			.execute();
 		return regUser;
@@ -133,12 +133,13 @@ export class UserService {
 	}
 
 	// Verify Account
-	verifyUser(email: string) {
+	async verifyUser(email: string): Promise<void> {
 		try {
-			const verify = this.userRepository
+			const currentTimeStamp = new Date().getTime();
+			await this.userRepository
 				.createQueryBuilder('users')
 				.update(User)
-				.set({ verify: 1 })
+				.set({ verify_at: currentTimeStamp })
 				.where('email = :email', { email })
 				.execute();
 		} catch (error) {
@@ -147,9 +148,9 @@ export class UserService {
 	}
 
 	// Lưu mật khẩu mới
-	savePassUser(email: string, password: string, token: string | null) {
+	async savePassUser(email: string, password: string, token: string | null): Promise<void> {
 		try {
-			const savePass = this.userRepository
+			await this.userRepository
 				.createQueryBuilder('users')
 				.update(User)
 				.set({ password: password })
@@ -162,10 +163,10 @@ export class UserService {
 	}
 
 	// Xoá tài khoản
-	deleteUser(id: number) {
+	async deleteUser(id: number): Promise<void> {
 		try {
 			// Xoá tài khoản
-			const actionDelete = this.userRepository
+			await this.userRepository
 				.createQueryBuilder('users')
 				.delete()
 				.from(User)
@@ -197,7 +198,7 @@ export class UserService {
 			// Tạo token
 			const token = this.jwtService.sign(payload);
 			// Lưu token
-			const saveToken = this.userRepository
+			await this.userRepository
 				.createQueryBuilder('users')
 				.update(User)
 				.set({ token: token })

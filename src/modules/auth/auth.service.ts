@@ -7,7 +7,6 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { jwtVerify } from './constants';
 import { MailService } from '../mail/mail.service';
-import { access } from 'fs';
 
 const saltOrRounds = 10;
 @Injectable()
@@ -35,7 +34,7 @@ export class AuthService {
 			user.phone = authDto.phone;
 			user.email = authDto.email;
 			user.password = hashedPassword;
-			user.verify = 0;
+			user.verify_at = null;
 			// Save User
 			const newUser = await this.userService.saveUser(user);
 			/*
@@ -90,7 +89,7 @@ export class AuthService {
 			userId: user.id_user,
 			email: user.email,
 			role: user.role.short_role,
-			verify: user.verify,
+			verify_at: user.verify_at,
 		};
 		const access_token = await this.jwtService.signAsync(payload);
 		// Lưu token vào db user
@@ -133,7 +132,7 @@ export class AuthService {
 			userId: user.id_user,
 			email: user.email,
 			role: user.role.short_role,
-			verify: user.verify,
+			verify: user.verify_at,
 		};
 		const access_token = await this.jwtService.signAsync(payload);
 		// Lưu token vào db user

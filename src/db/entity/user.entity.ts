@@ -14,7 +14,6 @@ import {
 } from 'typeorm';
 import { Role } from './role.entity';
 import { Product } from './product.entity';
-import { Category } from './categories.entity';
 import { ActionHistory } from './action_history.entity';
 
 @Entity({ name: 'users' })
@@ -37,8 +36,8 @@ export class User {
 	@Column({ type: 'varchar', length: 255, nullable: true })
 	password: string;
 
-	@Column({ type: 'tinyint', default: 0 })
-	verify: number;
+	@Column({ type: 'timestamp', default: null, nullable: true })
+	verify_at: Date;
 
 	@Column({ type: 'int', default: 3 })
 	id_role: number;
