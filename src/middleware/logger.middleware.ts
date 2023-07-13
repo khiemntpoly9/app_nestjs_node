@@ -20,6 +20,7 @@ export class LoggerMiddleware implements NestMiddleware {
 			const tokenUser = await this.userService.getTokenUser(payload.userId);
 			if (tokenUser == null) throw new UnauthorizedException('Bạn cần đăng nhập lại!');
 			// tokenUser.token
+			/* Refesh token
 			if (token !== tokenUser.token) {
 				const updateToken = { ...tokenUser.token, expiresIn: '6h' };
 				res.cookie('access_token', updateToken.token, {
@@ -28,6 +29,7 @@ export class LoggerMiddleware implements NestMiddleware {
 				});
 				// throw new BadRequestException('Token không trùng khớp!');
 			}
+			*/
 		}
 		next();
 	}
