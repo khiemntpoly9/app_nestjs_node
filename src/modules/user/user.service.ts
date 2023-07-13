@@ -47,7 +47,7 @@ export class UserService {
 					'users.last_name',
 					'users.email',
 					'users.password',
-					'users.verify',
+					'users.verify_at',
 					'role.short_role',
 				])
 				.where('users.email = :email', { email })
@@ -221,7 +221,7 @@ export class UserService {
 					'users.last_name',
 					'users.email',
 					'users.phone',
-					'users.verify',
+					'users.verify_at',
 					'role.name_role',
 					'users.createdAt',
 				])

@@ -93,7 +93,7 @@ export class AuthService {
 		};
 		const access_token = await this.jwtService.signAsync(payload);
 		// Lưu token vào db user
-		const saveToken = this.userService.saveTokenUser(user.email, access_token);
+		this.userService.saveTokenUser(user.email, access_token);
 		return access_token;
 	}
 
